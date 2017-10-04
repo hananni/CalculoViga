@@ -4,7 +4,8 @@ public class AcoArmaduraAtiva {
 	
 
 		public AcoArmaduraAtiva(DiametroBarraAtivo diametroBarra, Integer numerosFrios, Double nominal, Double area,
-			Double massa, Double fptk, Double fpyk, Double relaxacao, CombinacaoAcoes combinacaoAcoes, Double dMax) {
+			Double massa, Double fptk, Double fpyk, Double relaxacao, CombinacaoAcoes combinacaoAcoes, Double dMax,
+			Double cobrimentoMinimo) {
 		super();
 		this.diametroBarra = diametroBarra;
 		this.numerosFrios = numerosFrios;
@@ -16,6 +17,7 @@ public class AcoArmaduraAtiva {
 		this.relaxacao = relaxacao;
 		this.tensaoFptk = 0.77 * fptk;
 		this.tensaoFpyk = relaxacao * fpyk;
+		this.cobrimentoMinimo = cobrimentoMinimo;
 		
 		//Pega o menor valor gereado de tensão para multiplicar com a área
 		if (tensaoFptk > tensaoFpyk){ 
@@ -75,6 +77,7 @@ public class AcoArmaduraAtiva {
 		
 		private CombinacaoAcoes combinacaoAcoes;
 		
+		//ERRO - falta parâmetros para calcular o preAlongamento
 		//Pre-alongamento de armadura-ativa
 		private Double preAlongamento;
 
@@ -83,6 +86,8 @@ public class AcoArmaduraAtiva {
 		
 		//Diâmetro da brita (à verificar)
 		private Double dMax;
+		
+		private Double cobrimentoMinimo;
 		
 		public DiametroBarraAtivo getDiametroBarra() {
 			return diametroBarra;
@@ -220,7 +225,14 @@ public class AcoArmaduraAtiva {
 			this.dMax = dMax;
 		}
 
+		public Double getCobrimentoMinimo() {
+			return cobrimentoMinimo;
+		}
 
+		public void setCobrimentoMinimo(Double cobrimentoMinimo) {
+			this.cobrimentoMinimo = cobrimentoMinimo;
+		}
+		
 		
 		
 

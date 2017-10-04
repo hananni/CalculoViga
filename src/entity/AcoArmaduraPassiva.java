@@ -4,14 +4,15 @@ public class AcoArmaduraPassiva {
 
 	
 	
-	public AcoArmaduraPassiva(DiametroBarraPassivo diametroBarra, String categoria, Integer resistenciaEscoamento,
-			Double limiteResistencia, Integer alongamentoAposRuptura, Double dMax) {
+	public AcoArmaduraPassiva( DiametroBarraPassivo diametroBarra, String categoria, Integer resistenciaEscoamento,
+			Double limiteResistencia, Integer alongamentoAposRuptura, Double a, Double dMax) {
 		super();
 		this.diametroBarra = diametroBarra;
 		this.categoria = categoria;
 		this.resistenciaEscoamento = resistenciaEscoamento;
 		this.limiteResistencia = limiteResistencia;
 		this.alongamentoAposRuptura = alongamentoAposRuptura;
+		this.area = a;
 		
 		//Calculando o Espaçamento Horizontal
 		if ((diametroBarra.getDiametroBarra()*10) > 1.2*(dMax*10) && 2*(diametroBarra.getDiametroBarra()*10) > 2){
@@ -23,6 +24,7 @@ public class AcoArmaduraPassiva {
 		else{
 			this.espHorizontal = 2.0;
 		}
+		
 		//Calculando o Espaçamento Vertical
 		if ((diametroBarra.getDiametroBarra()*10) > 0.5*(dMax*10) && 2*(diametroBarra.getDiametroBarra()*10) > 2){
 			this.espVertical = diametroBarra.getDiametroBarra()*10;
@@ -47,6 +49,9 @@ public class AcoArmaduraPassiva {
 	
 	private Integer alongamentoAposRuptura;
 	
+
+	
+	private Double area;
 	//Espaçamento Horizontal
 	private Double espHorizontal;
 	//Espaçamento Vertical
@@ -118,6 +123,15 @@ public class AcoArmaduraPassiva {
 	public void setdMax(Double dMax) {
 		this.dMax = dMax;
 	}
+
+	public Double getArea() {
+		return area;
+	}
+
+	public void setArea(Double area) {
+		this.area = area;
+	}
+
 
 	
 	 
