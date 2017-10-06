@@ -4,7 +4,7 @@ import java.util.List;
 
 public class Viga {
 	
-	public Viga(Double i, Double j, Double k, Integer hipotese, Double gameS, AcoArmaduraAtiva acoArmaduraAtiva, AcoArmaduraPassiva acoArmaduraPasiva, Double betaX, Double betaZ,
+	public Viga(Double i, Double j, Double k, Integer hipotese, Double gamaS, AcoArmaduraAtiva acoArmaduraAtiva, AcoArmaduraPassiva acoArmaduraPassiva, Double betaX, Double betaZ,
 			Double epsilonCD, Double deltaEpsilonPD, Double tensaoAcoAtivo, Double tensaoAcoPassivo) {
 		super();
 		this.base = i;
