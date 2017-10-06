@@ -15,6 +15,7 @@ public class CoeficienteDeAcoes {
 	private Double temperatura;
 	
 	
+	
 	public Double getCargaAcidental() {
 		return cargaAcidental;
 	}

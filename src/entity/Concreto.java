@@ -3,11 +3,12 @@ package entity;
 public class Concreto {
 
 	
-	public Concreto(Viga viga, Double classeCobrimentoNominal) {
+	public Concreto(Viga viga, Double classeCobrimentoNominal, Double fck) {
 		super();
 		this.pesoConcreto = 25;
 		this.qG1 = viga.getArea() * pesoConcreto;
 		this.classeCobrimentoNominal = classeCobrimentoNominal;
+		this.fck = fck;
 	}
 
 	//FIXO 25 KN/m³
@@ -20,8 +21,9 @@ public class Concreto {
 	//Cobrimento Nominal
 	private Double classeCobrimentoNominal;
 	
-	//pegar outros atributos/objetos
-	
+	//Ou MPA (Resistencia, característica a compreenssão)
+	private Double fck;
+		
 	
 	public Integer getPesoConcreto() {
 		return pesoConcreto;
@@ -46,10 +48,13 @@ public class Concreto {
 	public void setClasseCobrimentoNominal(Double classeCobrimentoNominal) {
 		this.classeCobrimentoNominal = classeCobrimentoNominal;
 	}
-	
-	
-	
-	
-	
-	
+
+	public Double getFck() {
+		return fck;
+	}
+
+	public void setFck(Double fck) {
+		this.fck = fck;
+	}
+
 }

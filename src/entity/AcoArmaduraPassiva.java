@@ -4,12 +4,12 @@ public class AcoArmaduraPassiva {
 
 	
 	
-	public AcoArmaduraPassiva( DiametroBarraPassivo diametroBarra, String categoria, Integer resistenciaEscoamento,
+	public AcoArmaduraPassiva( DiametroBarraPassivo diametroBarra, String categoria, Integer fyk,
 			Double limiteResistencia, Integer alongamentoAposRuptura, Double a, Double dMax) {
 		super();
 		this.diametroBarra = diametroBarra;
 		this.categoria = categoria;
-		this.resistenciaEscoamento = resistenciaEscoamento;
+		this.fyk = fyk;
 		this.limiteResistencia = limiteResistencia;
 		this.alongamentoAposRuptura = alongamentoAposRuptura;
 		this.area = a;
@@ -43,7 +43,7 @@ public class AcoArmaduraPassiva {
 	
 	private String categoria;
 	
-	private Integer resistenciaEscoamento;
+	private Integer fyk;
 	
 	private Double limiteResistencia;
 	
@@ -76,12 +76,12 @@ public class AcoArmaduraPassiva {
 		this.categoria = categoria;
 	}
 
-	public Integer getResistenciaEscoamento() {
-		return resistenciaEscoamento;
+	public Integer getfyk() {
+		return fyk;
 	}
 
-	public void setResistenciaEscoamento(Integer resistenciaEscoamento) {
-		this.resistenciaEscoamento = resistenciaEscoamento;
+	public void setfyk(Integer fyk) {
+		this.fyk = fyk;
 	}
 
 	public Double getLimiteResistencia() {
