@@ -22,7 +22,7 @@ public class Verificacoes {
 		} else {
 			return false;
 		}
-
+ 
 	}
 	
 	public Boolean condicaoDois(Viga viga){
@@ -52,6 +52,12 @@ public class Verificacoes {
 		} else {
 			return false;
 		}
+		
+	}
+	
+	//VERIFICAÇÃO NÍVEL 02 - PROTENÇÃO LIMITADA (PAGINA 72) 
+	public void nv2ProtencaoLimitadaA (Viga viga){
+		if(viga.get)
 		
 	}
 

@@ -13,6 +13,7 @@ public class AcoArmaduraPassiva {
 		this.limiteResistencia = limiteResistencia;
 		this.alongamentoAposRuptura = alongamentoAposRuptura;
 		this.area = a;
+		this.elasticidadeacopassivo = 210 * Math.pow(10, 3); //verificar unidade
 		
 		//Calculando o Espaçamento Horizontal
 		if ((diametroBarra.getDiametroBarra()*10) > 1.2*(dMax*10) && 2*(diametroBarra.getDiametroBarra()*10) > 2){
@@ -38,6 +39,22 @@ public class AcoArmaduraPassiva {
 		
 	}
 
+	public Integer getFyk() {
+		return fyk;
+	}
+
+	public void setFyk(Integer fyk) {
+		this.fyk = fyk;
+	}
+
+	public Double getElasticidadeacopassivo() {
+		return elasticidadeacopassivo;
+	}
+
+	public void setElasticidadeacopassivo(Double elasticidadeacopassivo) {
+		this.elasticidadeacopassivo = elasticidadeacopassivo;
+	}
+
 	//VALORES FIXOS TABELA 7
 	private DiametroBarraPassivo diametroBarra;
 	
@@ -59,6 +76,10 @@ public class AcoArmaduraPassiva {
 	
 	//Diâmetro da brita (à verificar)
 	private Double dMax;
+	
+	//Modulo elasticidade
+	private Double elasticidadeacopassivo;
+	
 
 	public DiametroBarraPassivo getDiametroBarra() {
 		return diametroBarra;

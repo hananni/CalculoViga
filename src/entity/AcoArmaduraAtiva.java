@@ -18,6 +18,11 @@ public class AcoArmaduraAtiva {
 		this.tensaoFptk = 0.77 * fptk;
 		this.tensaoFpyk = relaxacao * fpyk;
 		this.cobrimentoMinimo = cobrimentoMinimo;
+		this.elasticidadeacoativo = 200 * Math.pow(10, 3); //verificar unidade
+		
+		
+		
+		
 		
 		//Pega o menor valor gereado de tensão para multiplicar com a área
 		if (tensaoFptk > tensaoFpyk){ 
@@ -78,7 +83,7 @@ public class AcoArmaduraAtiva {
 		private CombinacaoAcoes combinacaoAcoes;
 		
 		//ERRO - falta parâmetros para calcular o preAlongamento
-		//Pre-alongamento de armadura-ativa
+		//Pre-alongamento de armadura-ativa DELTAEPSILONPI
 		private Double preAlongamento;
 
 		//Espaçamento da armadura ativa
@@ -88,6 +93,10 @@ public class AcoArmaduraAtiva {
 		private Double dMax;
 		
 		private Double cobrimentoMinimo;
+		
+		//COMEÇANDO AQUI
+		private Double elasticidadeacoativo;
+		
 		
 		public DiametroBarraAtivo getDiametroBarra() {
 			return diametroBarra;
@@ -232,6 +241,16 @@ public class AcoArmaduraAtiva {
 		public void setCobrimentoMinimo(Double cobrimentoMinimo) {
 			this.cobrimentoMinimo = cobrimentoMinimo;
 		}
+
+		public Double getElasticidadeacoativo() {
+			return elasticidadeacoativo;
+		}
+
+		public void setElasticidadeacoativo(Double elasticidadeacoativo) {
+			this.elasticidadeacoativo = elasticidadeacoativo;
+		}
+		
+		
 		
 		
 		

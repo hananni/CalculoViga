@@ -21,7 +21,7 @@ public class Viga {
 		this.raioCInf = wCInf/area;
 		this.raioCSup = wCSup/area;
 		// checar segundo parâmetro.
-		this.concreto = new Concreto(this, null, null);
+		this.concreto = new Concreto(this, null, null,null);
 		this.mG1 = concreto.getqG1() * Math.pow (l,2)/8;
 		this.acoArmaduraAtiva = acoArmaduraAtiva;
 		this.y0 = acoArmaduraAtiva.getCobrimentoMinimo() + (acoArmaduraAtiva.getDiametroBarra().getBarras()/2) ;
@@ -88,15 +88,122 @@ public class Viga {
 			
 			
 		}
-		//Fim segunda hipótese
-		
+		//INICIO DA VERIFICACAO DOMINIO 3 ELU
+		//tensão aço armadura ativa
 		this.tensaoAcoPd = acoArmaduraAtiva.getFpyk() / gamaS;
+		//tensão aço armadura passiva
 		this.tensaoAcoSd = acoArmaduraPassiva.getfyk() / gamaS;
+		// JV CONTINUAÇÂO
+		//Calculo das forças de tracao
+		//FORÇA de Tração na armadura ativa
+		this.forcatracaoativo = acoArmaduraAtiva.getArea() * tensaoAcoPd;
+		//Força de tração na armadura passiva
+		this.forcatracaopassivo = acoArmaduraPassiva.getArea() * tensaoAcoSd;
+		//Força de tração total NTD
+		this.forcatracaototal = forcatracaoativo + forcatracaopassivo;
+		//PAG 67 Equilibrio: Tracao = Compressao NCD
+		this.forcacompressaocomprimida = forcatracaototal;
+		//PG 67 Tensao no concreto (realizar o calculo"IF")
+		
+		//PG68 Aréa comprimida (Acc)
+		this.areacomprimida = forcacompressaocomprimida/tensaocd;
+		
+		//pg68 altura diagrama compressao
+		this.yalturadiagramacompressao = areacomprimida/base;
+		
+		//pg68 Posicao linha Neuta X OBS: Criar o lambaconcreto
+		this.posicaolinhaneutra = yalturadiagramacompressao/lambdaconcreto;
+		
+		//pg68 LAMBA CONCRETO????
+		
+		//PG69 INICIO DEFORMAÇÕES ARMADURAS ATIVAS
+		this.deltaepsilonPD = ((dP - x )/x)*epsilonCU;
+		
+		//EPSLONCU ????
+		this.epsilonCU = epsilonCU;
+		
+		//PG69 EpsilonPD
+		this.defepsilonPD = acoArmaduraAtiva.getPreAlongamento() + deltaepsilonPD;
+		
+		//pg69 EpsilonPyD
+		this.epsilonPyD = tensaoAcoPd/acoArmaduraAtiva.getElasticidadeacoativo();
+		
+		//COM OS RESULTADOS ACIMA, E FEITO A VERIFICACAO DOS ITENS C e D da verficiacao ELU dominio3 
+		//Inicio das deformações das armaduras passivas
+		//pg69 Deformação A.Ativa
+		this.defepsilonSD = ((dS - x)/x)*epsilonCU;
+		
+		//Deformaçao simplificada A.Ativa
+		this.epsilonYD = tensaoAcoSd / acoArmaduraPassiva.getElasticidadeacopassivo();
+		//COM ESSES RESULTADOS VERIFICA-SE CONDICAO B ELU DOMINIO 3
+		//pg69 Posição do CG da área comprimida de altura y com tensão uniforme do concreto
+		this.ylinha = yalturadiagramacompressao / 2;
+		
+		//pg70
+		this.zs = dS - ylinha;
+		this.zp = dP - ylinha;
+		//pg70 Momento resistente de cálculo
+		this.MRD = (forcatracaopassivo * zs) + (forcatracaoativo * zp);
+		if(!(MRD >= mSD))
+			System.out.println("Momento resistente de cálculo não atende as solicitações");
+		
+		//FIM DA VERIFICAÇÃO DO ESTADO LIMITE ÚLTIMO
+		
+		if(concreto.getClasseconcreto() > 20 && concreto.getClasseconcreto() < 50){
+			this.fctm = 0.3 * Math.pow(concreto.getFck() , 2/3); 
+		} else {
+			this.fctm = 2.12 * Math.log(1+(0.11 * concreto.getFck()));
+		}
+		
+		this.fctkf = 1.428 * 0.7 * fctm;
+		
+		this.npinfinito = areaAcoArmaduraAtiva * acoArmaduraAtiva.getPreAlongamento() * acoArmaduraAtiva.getElasticidadeacoativo();
+		
+		
+		this.ep = (altura/2) - y0;
+		
+		//Verifciar qual cálculo
+		this.mCQP = null;
+		this.mCF = null;
+		
+		this.tensaoFibraSuperiorCF = npinfinito/area + (npinfinito * ep)/wCSup + mCF/wCSup;
+		
+		this.tensaoFibraInferiorCF = npinfinito/area + (npinfinito * ep)/wCInf + mCF/wCInf;
+		
+		this.tensaoFibraSuperiorCQP = npinfinito/area + (npinfinito * ep)/wCSup + mCQP/wCSup;
+	
+		this.tensaoFibraInferiorCQP = npinfinito/area + (npinfinito * ep)/wCInf + mCQP/wCInf;
 		
 		
 		
+		//Verificação pagina 72
+		
+		if( ! (tensaoFibraInferiorCF <= fctkf)){
+			System.out.println("A fibra foi fissurada");
+		}
+		
+		else if( !(tensaoFibraSuperiorCF <= Math.abs(0.6 * concreto.getFck()) )){
+			System.out.println("A fibra foi fissurada");
+		}
+		
+	
+		
+		else if(! (tensaoFibraInferiorCQP <= 0)){
+			System.out.println("A fibra foi fissurada");
+		}
 		
 		
+		else if( !(tensaoFibraSuperiorCQP <= Math.abs(0.6 * concreto.getFck()))){
+			System.out.println("A fibra  foi fissurada");
+		}
+		else{
+		//Se passar todos os testes de fissura (quatro condições acima)
+		System.out.println("Como não houve fissuração, o estádio 1 foi confirmado.");
+		}
+		
+		//Verificação página 79
+		
+	
 	}
 
 	private Double base;
@@ -202,8 +309,12 @@ public class Viga {
 	
 	private Double epsilonSD;
 	
-	//Fazer cálculo depois
+	//pg69 o calculo
 	private Double epsilonPyD;
+	
+	//pg69 deformação simplificada A.Passivo
+	private Double epsilonYD;
+	
 	
 	//Tensão aço ativo 2º calculo 
 	private Double tensaoAcoPd;
@@ -213,6 +324,87 @@ public class Viga {
 
 	//Coeficiente resistencia do aço (Tabela 12)
 	private Double gamaS;
+	
+	//Força tração aço ativo
+	private Double forcatracaoativo;
+	
+	//Força tração aço passivo
+	private Double forcatracaopassivo;
+	
+	//Força tração total
+	private Double forcatracaototal;
+	
+	//Equilibrio Tracao = Compressao pag67
+	private Double forcacompressaocomprimida;
+	
+	//pg 67 tensao no concreto
+	private Double tensaocd;
+	
+	//pg 67 Area comprimida Acc
+	private Double areacomprimida;
+	
+	//pg67 altura do diagrama compressao
+	private Double yalturadiagramacompressao;
+	
+	//pg67 Posicao linha Neuta X
+	private Double posicaolinhaneutra;
+	
+	//pg68 Lambda concreto
+	private Double lambdaconcreto;
+	
+	//pg69 Deformação armadura ativa DELTAPD
+	private Double deltaepsilonPD;
+	
+	//pg69 Fazer EPSILONCU que está em verificações
+	private Double epsilonCU;
+	
+	//pg69 Deformação A.Ativa EpsilonPD
+	private Double defepsilonPD;
+	
+	//pg69 Deformação A.Passiva
+	private Double defepsilonSD;
+	
+	//pg69 Posição do CG da área comprimida de altura y com tensão uniforme do concreto
+	private Double ylinha;
+	
+	//pg70 Braços de alavanca da armadura ativa (zp) e da armadura passiva (zs):
+	private Double zp;
+	private Double zs;
+	
+	//pg70 Cálculo do momento resistente de cálculo MRd
+	private Double MRD;
+	private Double MRD1;
+	
+	//Resistencia à tração direta média do concreto
+	private Double fctm;
+	
+	//Resistencia à tração na flexão do concreto
+	private Double fctkf;
+	
+	
+	//Força protenção para um tempo infinito
+	private Double npinfinito;
+	
+	//Tensão fibra superior CQP
+	private Double tensaoFibraSuperiorCQP;
+	
+	//Tensão fibra inferior CQP
+	private Double tensaoFibraInferiorCQP;
+	
+	//Tensão fibra superior
+	private Double tensaoFibraSuperiorCF;
+	
+	//Tensão fibra inferior
+	private Double tensaoFibraInferiorCF;
+		
+	//Valor da excentricidade
+	private Double ep;
+	
+	//Verificar calculo - (MOMENTO)
+	private Double mCQP;
+	
+	//Verificar calculo - (MOMENTO)
+	private Double mCF;
 	
 	public Double getBase() {
 		return base;
@@ -533,7 +725,160 @@ public class Viga {
 
 	public void setGamaS(Double gamaS) {
 		this.gamaS = gamaS;
-	}	
+	}
+
+	public Double getForcatracaoativo() {
+		return forcatracaoativo;
+	}
+
+	public void setForcatracaoativo(Double forcatracaoativo) {
+		this.forcatracaoativo = forcatracaoativo;
+	}
+
+	public Double getForcatracaopassivo() {
+		return forcatracaopassivo;
+	}
+
+	public void setForcatracaopassivo(Double forcatracaopassivo) {
+		this.forcatracaopassivo = forcatracaopassivo;
+	}
+
+	public Double getForcatracaototal() {
+		return forcatracaototal;
+	}
+
+	public void setForcatracaototal(Double forcatracaototal) {
+		this.forcatracaototal = forcatracaototal;
+	}
+
+	public Double getForcacompressaocomprimida() {
+		return forcacompressaocomprimida;
+	}
+
+	public void setForcacompressaocomprimida(Double forcacompressaocomprimida) {
+		this.forcacompressaocomprimida = forcacompressaocomprimida;
+	}
+
+	public Double getTensaocd() {
+		return tensaocd;
+	}
+
+	public void setTensaocd(Double tensaocd) {
+		this.tensaocd = tensaocd;
+	}
+
+	public Double getAreacomprimida() {
+		return areacomprimida;
+	}
+
+	public void setAreacomprimida(Double areacomprimida) {
+		this.areacomprimida = areacomprimida;
+	}
+
+	public Double getYalturadiagramacompressao() {
+		return yalturadiagramacompressao;
+	}
+
+	public void setYalturadiagramacompressao(Double yalturadiagramacompressao) {
+		this.yalturadiagramacompressao = yalturadiagramacompressao;
+	}
+
+	public Double getPosicaolinhaneutra() {
+		return posicaolinhaneutra;
+	}
+
+	public void setPosicaolinhaneutra(Double posicaolinhaneutra) {
+		this.posicaolinhaneutra = posicaolinhaneutra;
+	}
+
+	public Double getLambdaconcreto() {
+		return lambdaconcreto;
+	}
+
+	public void setLambdaconcreto(Double lambdaconcreto) {
+		this.lambdaconcreto = lambdaconcreto;
+	}
+
+	public Double getDeltaepsilonPD() {
+		return deltaepsilonPD;
+	}
+
+	public void setDeltaepsilonPD(Double deltaepsilonPD) {
+		this.deltaepsilonPD = deltaepsilonPD;
+	}
+
+	public Double getEpsilonCU() {
+		return epsilonCU;
+	}
+
+	public void setEpsilonCU(Double epsilonCU) {
+		this.epsilonCU = epsilonCU;
+	}
+
+	public Double getDefepsilonPD() {
+		return defepsilonPD;
+	}
+
+	public void setDefepsilonPD(Double defepsilonPD) {
+		this.defepsilonPD = defepsilonPD;
+	}
+
+	public Double getEpsilonYD() {
+		return epsilonYD;
+	}
+
+	public void setEpsilonYD(Double epsilonYD) {
+		this.epsilonYD = epsilonYD;
+	}
+
+	public Double getDefepsilonSD() {
+		return defepsilonSD;
+	}
+
+	public void setDefepsilonSD(Double defepsilonSD) {
+		this.defepsilonSD = defepsilonSD;
+	}
+
+	public Double getYlinha() {
+		return ylinha;
+	}
+
+	public void setYlinha(Double ylinha) {
+		this.ylinha = ylinha;
+	}
+
+	public Double getZp() {
+		return zp;
+	}
+
+	public void setZp(Double zp) {
+		this.zp = zp;
+	}
+
+	public Double getZs() {
+		return zs;
+	}
+
+	public void setZs(Double zs) {
+		this.zs = zs;
+	}
+
+	public Double getMRD() {
+		return MRD;
+	}
+
+	public void setMRD(Double mRD) {
+		MRD = mRD;
+	}
+
+	public Double getMRD1() {
+		return MRD1;
+	}
+
+	public void setMRD1(Double mRD1) {
+		MRD1 = mRD1;
+	}
+
 	
 	
 }
