@@ -3,20 +3,19 @@ package entity;
 public class Concreto {
 
 	
-	public Concreto(Viga viga, Double classeCobrimentoNominal, Double fck, Double classeconcreto) {
+	public Concreto(Double areaViga, String classeconcreto, Integer fck) {
 		super();
 		this.pesoConcreto = 25;
-		this.qG1 = viga.getArea() * pesoConcreto;
-		this.classeCobrimentoNominal = classeCobrimentoNominal;
-		this.fck = fck;
+		this.qG1 = areaViga * pesoConcreto;
 		this.classeconcreto = classeconcreto;
+		this.fck = fck;
 		//gamac condicao pag 67
-		if (classeconcreto >= 20 || classeconcreto <= 50){
+		if (fck >= 20 || fck <= 50){
 			this.gamac = 0.85;
-		} else if (classeconcreto > 50){
+		} else if (fck > 50){
 			this.gamac = 0.85*(1-((fck-50)/200 ));
 		}
-		this.sConcreto = 0.25;
+		
 	}
 	
 
@@ -31,17 +30,13 @@ public class Concreto {
 	private Double classeCobrimentoNominal;
 	
 	//Ou MPA (Resistencia, característica a compreenssão)
-	private Double fck;
+	private Integer fck;
 	
 	//gamac pag 67
 	private Double gamac;
 	
 	//classeconcreto
-	private Double classeconcreto;
-	
-	//valor para beta1 pag82 (valor fixado em 0,25)
-	private Double sConcreto;
-	
+	private String classeconcreto;
 	
 	
 		
@@ -70,11 +65,11 @@ public class Concreto {
 		this.classeCobrimentoNominal = classeCobrimentoNominal;
 	}
 
-	public Double getFck() {
+	public Integer getFck() {
 		return fck;
 	}
 
-	public void setFck(Double fck) {
+	public void setFck(Integer fck) {
 		this.fck = fck;
 	}
 
@@ -86,20 +81,12 @@ public class Concreto {
 		this.gamac = gamac;
 	}
 
-	public Double getClasseconcreto() {
+	public String getClasseconcreto() {
 		return classeconcreto;
 	}
 
-	public void setClasseconcreto(Double classeconcreto) {
+	public void setClasseconcreto(String classeconcreto) {
 		this.classeconcreto = classeconcreto;
-	}
-
-	public Double getsConcreto() {
-		return sConcreto;
-	}
-
-	public void setsConcreto(Double sConcreto) {
-		this.sConcreto = sConcreto;
 	}
 	
 	

@@ -54,30 +54,30 @@ public class main {
 		//Fim Frontend
 		
 		// Inicializando classes
-		viga = new Viga(i, j, k, hipotese, gamaS, acoArmaduraAtiva, acoArmaduraPassiva, betaX, betaZ,
-				epsilonCD, deltaEpsilonPD, tensaoAcoAtivo, tensaoAcoPassivo, gamaFicticio,  gamaEndurecimento, umidade,
-				beta1Infinito, fcT0, fcTInfinito, betaF0, mPermanentes, mAcidentais);
-		
-		acoArmaduraAtiva = new AcoArmaduraAtiva(diametroBarraAtivo, numerosFrios, nominal, areaArmaduraAtiva,
-				massa, fptk, fpyk, relaxacao, null, dMaxAtivo,
-				 pondPretacao, quantidadeCordoalhas);
-
-		acoArmaduraPassiva = new AcoArmaduraPassiva(diametroBarraPassivo, categoria, fyk, limiteResistencia, 
-				alongamentoAposRuptura, a, dMaxPassivo);
-		
-		diametroBarraAtivo = new DiametroBarraAtivo(barras, nominalDiametroBarraAtivo,
-				areaDiametroBarraAtivo, perimetroDiametroBarraAtivo);
-		
-		diametroBarraPassivo = new DiametroBarraPassivo(diametroBarra, massaNominal, areaSecao, perimetroDiametroBarraPassivo);
-
-		concreto = new Concreto(viga, classeCobrimentoNominal, fck, classeconcreto);
-		
-		Verificacoes ver = new Verificacoes();
-		
-		if (ver.condicaoUm(viga)== true && ver.condicaoDois(viga)== true && ver.condicaoTres(viga)== true && ver.condicaoQuarta(viga)== true)
-		{
-			
-		}
+//		viga = new Viga(i, j, k, hipotese, gamaS, acoArmaduraAtiva, acoArmaduraPassiva, betaX, betaZ,
+//				epsilonCD, deltaEpsilonPD, tensaoAcoAtivo, tensaoAcoPassivo, gamaFicticio,  gamaEndurecimento, umidade,
+//				beta1Infinito, fcT0, fcTInfinito, betaF0, mPermanentes, mAcidentais);
+//		
+//		acoArmaduraAtiva = new AcoArmaduraAtiva(diametroBarraAtivo, numerosFrios, nominal, areaArmaduraAtiva,
+//				massa, fptk, fpyk, relaxacao, null, dMaxAtivo,
+//				 pondPretacao, quantidadeCordoalhas);
+//
+//		acoArmaduraPassiva = new AcoArmaduraPassiva(diametroBarraPassivo, categoria, fyk, limiteResistencia, 
+//				alongamentoAposRuptura, a, dMaxPassivo);
+//		
+//		diametroBarraAtivo = new DiametroBarraAtivo(barras, nominalDiametroBarraAtivo,
+//				areaDiametroBarraAtivo, perimetroDiametroBarraAtivo);
+//		
+//		diametroBarraPassivo = new DiametroBarraPassivo(diametroBarra, massaNominal, areaSecao, perimetroDiametroBarraPassivo);
+//
+//		concreto = new Concreto(viga, classeCobrimentoNominal, fck, classeconcreto);
+//		
+//		Verificacoes ver = new Verificacoes();
+//		
+//		if (ver.condicaoUm(viga)== true && ver.condicaoDois(viga)== true && ver.condicaoTres(viga)== true && ver.condicaoQuarta(viga)== true)
+//		{
+//			
+//		}
 		
 		/*		
 		Interpolacao interpolacao = new Interpolacao(area, area, area, area, area);

@@ -3,18 +3,18 @@ package entity;
 public class AcoArmaduraAtiva {
 	
 
-		public AcoArmaduraAtiva(DiametroBarraAtivo diametroBarra, Integer numerosFrios, Double nominal, Double area,
-			Double massa, Double fptk, Double fpyk, Double relaxacao, CombinacaoAcoes combinacaoAcoes, Double dMax,
-			 Double pondPretacao, Integer quantidadeCordoalhas) {
+		public AcoArmaduraAtiva(Integer numerosFrios, Double nominal, Double area,
+			Double massa, Double fptk, Double fpyk, Integer quantidadeCordoalhas) {
 		super();
-		this.diametroBarra = diametroBarra;
 		this.numerosFrios = numerosFrios;
 		this.nominal = nominal;
 		this.area = area;
 		this.massa = massa;
 		this.fptk = fptk;
 		this.fpyk = fpyk;
-		this.relaxacao = relaxacao;
+		this.dMax = 1.9;
+		this.pondPretracao = 1.0;
+//		this.relaxacao = relaxacao;
 		this.tensaoFptk = 0.77 * fptk;
 		this.tensaoFpyk = 0.9 * fpyk; //definido apenas como Relaxacao Normal
 		this.cobrimentoMinimo = 35; //mm
@@ -59,6 +59,7 @@ public class AcoArmaduraAtiva {
 		private Double area;
 		
 		private Double massa;
+	
 		//Coeficiente de ponderação para pretacao
 		private Double pondPretracao;
 		

@@ -4,22 +4,21 @@ public class AcoArmaduraPassiva {
 
 	
 	
-	public AcoArmaduraPassiva( DiametroBarraPassivo diametroBarra, String categoria, Integer fyk,
-			Double limiteResistencia, Integer alongamentoAposRuptura, Double a, Double dMax) {
+	public AcoArmaduraPassiva( Double diametroBarra,  Double area, String categoria, Integer fyk) {
 		super();
 		this.diametroBarra = diametroBarra;
+		this.area = area;
 		this.categoria = categoria;
+		this.dMax = 1.9;
+		//De acordo com a categoria
 		this.fyk = fyk;
-		this.limiteResistencia = limiteResistencia;
-		this.alongamentoAposRuptura = alongamentoAposRuptura;
-		this.area = a;
 		this.elasticidadeacopassivo = 210 * Math.pow(10, 3); //verificar unidade
 		
 		//Calculando o Espaçamento Horizontal
-		if ((diametroBarra.getDiametroBarra()*10) > 1.2*(dMax*10) && 2*(diametroBarra.getDiametroBarra()*10) > 2){
-			this.espHorizontal = diametroBarra.getDiametroBarra()*10;
+		if ((diametroBarra*10) > 1.2*(dMax*10) && 2*(diametroBarra*10) > 2){
+			this.espHorizontal = diametroBarra*10;
 		}
-		else if (1.2*(dMax*10) > 2*(diametroBarra.getDiametroBarra()*10) && 1.2*(dMax*10) > 2){
+		else if (1.2*(dMax*10) > 2*(diametroBarra*10) && 1.2*(dMax*10) > 2){
 			this.espHorizontal = 1.2*(dMax*10);
 		}
 		else{
@@ -27,10 +26,10 @@ public class AcoArmaduraPassiva {
 		}
 		
 		//Calculando o Espaçamento Vertical
-		if ((diametroBarra.getDiametroBarra()*10) > 0.5*(dMax*10) && 2*(diametroBarra.getDiametroBarra()*10) > 2){
-			this.espVertical = diametroBarra.getDiametroBarra()*10;
+		if ((diametroBarra*10) > 0.5*(dMax*10) && 2*(diametroBarra*10) > 2){
+			this.espVertical = diametroBarra*10;
 		}
-		else if (0.5*(dMax*10) > 2*(diametroBarra.getDiametroBarra()*10) && 0.5*(dMax*10) > 2){
+		else if (0.5*(dMax*10) > 2*(diametroBarra*10) && 0.5*(dMax*10) > 2){
 			this.espVertical = 0.5*(dMax*10);
 		}
 		else{
@@ -39,24 +38,12 @@ public class AcoArmaduraPassiva {
 		
 	}
 
-	public Integer getFyk() {
-		return fyk;
-	}
 
-	public void setFyk(Integer fyk) {
-		this.fyk = fyk;
-	}
-
-	public Double getElasticidadeacopassivo() {
-		return elasticidadeacopassivo;
-	}
-
-	public void setElasticidadeacopassivo(Double elasticidadeacopassivo) {
-		this.elasticidadeacopassivo = elasticidadeacopassivo;
-	}
 
 	//VALORES FIXOS TABELA 7
-	private DiametroBarraPassivo diametroBarra;
+//	private DiametroBarraPassivo diametroBarra;
+	
+	private Double diametroBarra;
 	
 	private String categoria;
 	
@@ -81,13 +68,13 @@ public class AcoArmaduraPassiva {
 	private Double elasticidadeacopassivo;
 	
 
-	public DiametroBarraPassivo getDiametroBarra() {
-		return diametroBarra;
-	}
-
-	public void setDiametroBarra(DiametroBarraPassivo diametroBarra) {
-		this.diametroBarra = diametroBarra;
-	}
+//	public DiametroBarraPassivo getDiametroBarra() {
+//		return diametroBarra;
+//	}
+//
+//	public void setDiametroBarra(DiametroBarraPassivo diametroBarra) {
+//		this.diametroBarra = diametroBarra;
+//	}
 
 	public String getCategoria() {
 		return categoria;
@@ -155,7 +142,33 @@ public class AcoArmaduraPassiva {
 
 
 	
-	 
+	public Integer getFyk() {
+		return fyk;
+	}
+	
+	
+
+	public void setFyk(Integer fyk) {
+		this.fyk = fyk;
+	}
+
+	public Double getElasticidadeacopassivo() {
+		return elasticidadeacopassivo;
+	}
+
+	public void setElasticidadeacopassivo(Double elasticidadeacopassivo) {
+		this.elasticidadeacopassivo = elasticidadeacopassivo;
+	}
+
+	public Double getDiametroBarra() {
+		return diametroBarra;
+	}
+
+	public void setDiametroBarra(Double diametroBarra) {
+		this.diametroBarra = diametroBarra;
+	}
+
+
 	
 	
 																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																					

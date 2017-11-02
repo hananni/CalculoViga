@@ -25,17 +25,17 @@ public class Verificacoes {
  
 	}
 	
-	public Boolean condicaoDois(Viga viga){
-		
-		if(viga.getEpsilonSD() >= viga.getEpsilonSYD() && viga.getEpsilonSD() <= 0.1) {
-			System.out.println("Domínio 3 foi confirmado");
-			return true;
-		} else {
-			System.out.println("Erro na condição Dois!!");
-			return false;
-		}
-		
-	}
+//	public Boolean condicaoDois(Viga viga){
+//		
+//		if(viga.getEpsilonSD() >= viga.getEpsilonSYD() && viga.getEpsilonSD() <= 0.1) {
+//			System.out.println("Domínio 3 foi confirmado");
+//			return true;
+//		} else {
+//			System.out.println("Erro na condição Dois!!");
+//			return false;
+//		}
+//		
+//	}
 	
 	public Boolean condicaoTres(Viga viga){
 		

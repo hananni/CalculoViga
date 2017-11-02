@@ -2,13 +2,16 @@
 
 import java.util.List;
 
+import javax.swing.JOptionPane;
+
+import main.CalculoViga;
+
 public class Viga {
 	
 	public Viga(Double i, Double j, Double k, Integer hipotese, Double gamaS, AcoArmaduraAtiva acoArmaduraAtiva,
-			AcoArmaduraPassiva acoArmaduraPassiva, Double betaX, Double betaZ, Double epsilonCD, Double deltaEpsilonPD,
-			Double tensaoAcoAtivo, Double tensaoAcoPassivo, Double gamaFicticio, Double gamaEndurecimento, 
-			Double umidade, Double beta1Infinito, Double fcT0, Double fcTInfinito, Double betaF0, Double mPermanentes,
-			Double mAcidentais) {
+			AcoArmaduraPassiva acoArmaduraPassiva, String classeconcreto, Integer fck, Double betaX, Double betaZ, Double epsilonCD, Double deltaEpsilonPD,
+			Double tensaoAcoAtivo, Double tensaoAcoPassivo, Double umidade, Double gamaEndurecimento, 
+			 Double beta1Infinito, Double fcT0, Double fcTInfinito, Double betaF0, Double mPermanentes, Double mAcidentais) {
 		super();
 		this.base = i;
 		this.altura = j;
@@ -24,13 +27,13 @@ public class Viga {
 		this.raioCInf = wCInf/area;
 		this.raioCSup = wCSup/area;
 		// checar segundo parâmetro.
-		this.concreto = new Concreto(this, null, null,null);
+		this.concreto = new Concreto(area, classeconcreto, fck);
 		this.mG1 = concreto.getqG1() * Math.pow (l,2)/8;
 		this.acoArmaduraAtiva = acoArmaduraAtiva;
 		this.y0 = acoArmaduraAtiva.getCobrimentoMinimo() + (acoArmaduraAtiva.getDiametroBarra().getBarras()/2) ;
 		this.dP = altura - this.y0;
-		this.mPermanentes = null; //entrar com esses dados
-		this.mAcidentais = null; //entrar com esses dados
+		this.mPermanentes = mPermanentes; //entrar com esses dados
+		this.mAcidentais = mAcidentais; //entrar com esses dados
 		
 		
 		this.acoArmaduraPassiva = acoArmaduraPassiva;
@@ -80,8 +83,8 @@ public class Viga {
 		} 
 		// Início da segunda hipótese, quando tiver aço de armadura passiva.
 		else if (this.hipotese == 2){
-			if(acoArmaduraPassiva.getDiametroBarra().getDiametroBarra() != 0 && acoArmaduraAtiva.getDiametroBarra().getBarras() != 0){
-				this.y0s =  acoArmaduraAtiva.getCobrimentoMinimo() + (acoArmaduraPassiva.getDiametroBarra().getDiametroBarra()/2);
+			if(acoArmaduraPassiva.getDiametroBarra() != 0 && acoArmaduraAtiva.getNominal() != 0){
+				this.y0s =  acoArmaduraAtiva.getCobrimentoMinimo() + (acoArmaduraPassiva.getDiametroBarra()/2);
 				
 				// DS
 				this.dS = altura - this.y0;
@@ -162,7 +165,7 @@ public class Viga {
 		
 		//FIM DA VERIFICAÇÃO DO ESTADO LIMITE ÚLTIMO
 		
-		if(concreto.getClasseconcreto() > 20 && concreto.getClasseconcreto() < 50){
+		if(concreto.getFck() > 20 && concreto.getFck() < 50){
 			this.fctm = 0.3 * Math.pow(concreto.getFck() , 2/3); 
 		} else {
 			this.fctm = 2.12 * Math.log(1+(0.11 * concreto.getFck()));
@@ -255,18 +258,17 @@ public class Viga {
 		this.perdaProtensaoRelaxacao = relaxacaoPerdas * acoArmaduraAtiva.getArea();
 		//fim da relaxacao
 		//Inicio retracao
-		this.gamaFicticio = null;
+		this.umidade = umidade;// ENTRAR COM ESSE DADO DE ACORDO COM TABELA
+		this.gamaFicticio = 1+Math.pow(2.718281828, (-7.8+(0.1*umidade)));
 		this.perimetroExternoAtmosfera = altura+altura+base+l; //descobrir onde achar este dado
-		this.gamaFicticio = null; // ENTRAR COM ESSE DADO DE ACORDO COM TABELA
 		this.hFicticio = gamaFicticio * ((2*area)/perimetroExternoAtmosfera);
 		this.temperaturaMedia = 30;
-		this.gamaEndurecimento = null;// ENTRAR COM ESSE DADO DE ACORDO COM TABELA
+		this.gamaEndurecimento = gamaEndurecimento;// ENTRAR COM ESSE DADO DE ACORDO COM TABELA
 		this.idadeFicticiaConcreto = gamaEndurecimento * ((temperaturaMedia+10)/30) * 30;
-		this.umidade = null;// ENTRAR COM ESSE DADO DE ACORDO COM TABELA
 		this.epsilon1S = ((-8.09)+(umidade/15)+(Math.pow(umidade, 2)/2284)+(Math.pow(umidade, 3)/133765)+(Math.pow(umidade, 4)/7608150))/Math.pow(10, 4);
 		this.epsilon2S = ((33+(2*hFicticio))/(20.8+(3*hFicticio)));
-		this.beta1Infinito = 1;
-		this.beta1 = null;// ENTRAR COM ESSE DADO DE ACORDO COM TABELA
+		this.beta1Infinito = beta1Infinito;
+		this.beta1 = 1.0;// ENTRAR COM ESSE DADO DE ACORDO COM TABELA
 		this.epsilonCS = epsilon1S * epsilon2S * (1-beta1);
 		this.tensaoRetracaoInicial = epsilonCS * acoArmaduraAtiva.getElasticidadeacoativo();
 		this.forcaRetracaoInicial = tensaoRetracaoInicial * acoArmaduraAtiva.getArea();
@@ -293,14 +295,14 @@ public class Viga {
 		this.forcaFinal2 = forcaFinal1 - deltaPP;
 		
 		//INICIO PERDAS PROGRESSIVAS PG90
-		this.fcT0 = null; //receber da tabela
-		this.fcTInfinito = null; //receber da tabela
+		this.fcT0 = fcT0; //receber da tabela
+		this.fcTInfinito = fcTInfinito; //receber da tabela
 		this.fluenciaRapida = 0.8*(1-(fcT0/fcTInfinito)); //phiA
 		this.phi1C = 4.45 - (0.035 * umidade);
 		this.phi2C = (42+hFicticio)/(20+hFicticio);
 		this.phiInfinito = phi1C + phi2C;
-		this.betaF0 = null; //receber da tabela
-		this.betaFInfinito = 1;
+		this.betaF0 = Double.parseDouble(JOptionPane.showInputDialog("Valor de Beta F0: ")); //receber da tabela
+		this.betaFInfinito = 1.0;
 		this.betaD = 1;
 		this.coeficienteFluencia = fluenciaRapida +(phiInfinito*(1-betaF0))+0.4;
 		this.mG1Y = (mG1*ep)/inerciaX;
@@ -320,7 +322,7 @@ public class Viga {
 		this.forcaFinal3 = forcaFinal2 - perdaRetracaoFluencia - perdaProtensaoRelaxacaoAco;
 		//INICIO DAS VERIFICACOES PARA PERDAS
 		// ELS
-		if(concreto.getClasseconcreto() > 20 && concreto.getClasseconcreto() < 50){
+		if(concreto.getFck() > 20 && concreto.getFck() < 50){
 			this.fctm = 0.3 * Math.pow(concreto.getFck() , 2/3); 
 		} else {
 			this.fctm = 2.12 * Math.log(1+(0.11 * concreto.getFck()));
@@ -687,7 +689,7 @@ public class Viga {
 	private Double betaS; 
 	//7º Passo – O valor da deformação por retração pode ser expresso abaixo:
 	private Double epsilonCS;
-	private Integer beta1Infinito; // este é igual a 1
+	private Double beta1Infinito; // este é igual a 1
 	//8º Passo – Cálculo da perda de tensão por retração inicial do concreto (ps):
 	private Double tensaoRetracaoInicial;
     //9º Passo – Perda da força por retração inicial do concreto:
@@ -725,7 +727,7 @@ public class Viga {
 	//Cálculo do valor final do coeficiente de deformação lenta irreversível
 	private Double phiInfinito;
 	private Double betaF0;//receber da tabela
-	private Integer betaFInfinito;
+	private Double betaFInfinito;
 	private Integer betaD;
 	//Cálculo do coeficiente de fluência:
 	private Double coeficienteFluencia; //formula 168
@@ -1558,11 +1560,11 @@ public class Viga {
 
 
 
-	public Integer getBeta1Infinito() {
+	public Double getBeta1Infinito() {
 		return beta1Infinito;
 	}
 
-	public void setBeta1Infinito(Integer beta1Infinito) {
+	public void setBeta1Infinito(Double beta1Infinito) {
 		this.beta1Infinito = beta1Infinito;
 	}
 
@@ -1734,11 +1736,11 @@ public class Viga {
 		this.betaF0 = betaF0;
 	}
 
-	public Integer getBetaFInfinito() {
+	public Double getBetaFInfinito() {
 		return betaFInfinito;
 	}
 
-	public void setBetaFInfinito(Integer betaFInfinito) {
+	public void setBetaFInfinito(Double betaFInfinito) {
 		this.betaFInfinito = betaFInfinito;
 	}
 
