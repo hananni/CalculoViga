@@ -5,7 +5,7 @@ public class AcoArmaduraAtiva {
 
 		public AcoArmaduraAtiva(DiametroBarraAtivo diametroBarra, Integer numerosFrios, Double nominal, Double area,
 			Double massa, Double fptk, Double fpyk, Double relaxacao, CombinacaoAcoes combinacaoAcoes, Double dMax,
-			Double cobrimentoMinimo) {
+			 Double pondPretacao, Integer quantidadeCordoalhas) {
 		super();
 		this.diametroBarra = diametroBarra;
 		this.numerosFrios = numerosFrios;
@@ -16,10 +16,11 @@ public class AcoArmaduraAtiva {
 		this.fpyk = fpyk;
 		this.relaxacao = relaxacao;
 		this.tensaoFptk = 0.77 * fptk;
-		this.tensaoFpyk = relaxacao * fpyk;
-		this.cobrimentoMinimo = cobrimentoMinimo;
+		this.tensaoFpyk = 0.9 * fpyk; //definido apenas como Relaxacao Normal
+		this.cobrimentoMinimo = 35; //mm
 		this.elasticidadeacoativo = 200 * Math.pow(10, 3); //verificar unidade
-		
+		this.pondPretracao = null;
+		this.quantidadeCordoalhas = quantidadeCordoalhas;
 		
 		
 		
@@ -35,7 +36,7 @@ public class AcoArmaduraAtiva {
 		
 //		this.tensao = 200 * Math.pow(10, 9)  ;
 	
-		this.pd = np0 * combinacaoAcoes.getGamaY();
+		this.pd = np0 * 0.9;
 		this.preAlongamento = ((pd * (1-0.25))/(200 * Math.pow(10, 9)) * area ) * 1000;
 		if (2*(nominal*10) > 1.2*(dMax*10) && 2*(nominal*10) > 2){
 			this.espMin = 2*(nominal*10);
@@ -48,6 +49,7 @@ public class AcoArmaduraAtiva {
 		}
 	}
 
+		
 		private DiametroBarraAtivo diametroBarra;
 	
 		private Integer numerosFrios;
@@ -57,6 +59,10 @@ public class AcoArmaduraAtiva {
 		private Double area;
 		
 		private Double massa;
+		//Coeficiente de ponderação para pretacao
+		private Double pondPretracao;
+		
+		private Integer quantidadeCordoalhas;
 		
 		//O da formula
 		private Double tensaoFptk;
@@ -92,7 +98,7 @@ public class AcoArmaduraAtiva {
 		//Diâmetro da brita (à verificar)
 		private Double dMax;
 		
-		private Double cobrimentoMinimo;
+		private Integer cobrimentoMinimo;
 		
 		//COMEÇANDO AQUI
 		private Double elasticidadeacoativo;
@@ -234,11 +240,11 @@ public class AcoArmaduraAtiva {
 			this.dMax = dMax;
 		}
 
-		public Double getCobrimentoMinimo() {
+		public Integer getCobrimentoMinimo() {
 			return cobrimentoMinimo;
 		}
 
-		public void setCobrimentoMinimo(Double cobrimentoMinimo) {
+		public void setCobrimentoMinimo(Integer cobrimentoMinimo) {
 			this.cobrimentoMinimo = cobrimentoMinimo;
 		}
 
@@ -248,6 +254,22 @@ public class AcoArmaduraAtiva {
 
 		public void setElasticidadeacoativo(Double elasticidadeacoativo) {
 			this.elasticidadeacoativo = elasticidadeacoativo;
+		}
+
+		public Double getPondPretracao() {
+			return pondPretracao;
+		}
+
+		public void setPondPretracao(Double pondPretracao) {
+			this.pondPretracao = pondPretracao;
+		}
+
+		public Integer getQuantidadeCordoalhas() {
+			return quantidadeCordoalhas;
+		}
+
+		public void setQuantidadeCordoalhas(Integer quantidadeCordoalhas) {
+			this.quantidadeCordoalhas = quantidadeCordoalhas;
 		}
 		
 		

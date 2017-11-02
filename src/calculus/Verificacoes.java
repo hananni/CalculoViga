@@ -27,9 +27,11 @@ public class Verificacoes {
 	
 	public Boolean condicaoDois(Viga viga){
 		
-		if(viga.getEpsilonSD() >= viga.getEpsilonPyD() && viga.getEpsilonSD() <= 0.1) {
+		if(viga.getEpsilonSD() >= viga.getEpsilonSYD() && viga.getEpsilonSD() <= 0.1) {
+			System.out.println("Domínio 3 foi confirmado");
 			return true;
 		} else {
+			System.out.println("Erro na condição Dois!!");
 			return false;
 		}
 		
@@ -38,8 +40,10 @@ public class Verificacoes {
 	public Boolean condicaoTres(Viga viga){
 		
 		if(viga.getEpsilonPD() >= viga.getEpsilonPyD()) {
+			System.out.println("Domínio 3 foi confirmado");
 			return true;
 		} else {
+			System.out.println("Erro na condição Três!!");
 			return false;
 		}
 		
@@ -48,8 +52,10 @@ public class Verificacoes {
 	public Boolean condicaoQuarta(Viga viga){
 		
 		if(viga.getDeltaEpsilonPD() <= 0.1) {
+			System.out.println("Domínio 3 foi confirmado");
 			return true;
 		} else {
+			System.out.println("Erro na condição Quatro!!");
 			return false;
 		}
 		
@@ -57,7 +63,7 @@ public class Verificacoes {
 	
 	//VERIFICAÇÃO NÍVEL 02 - PROTENÇÃO LIMITADA (PAGINA 72) 
 	public void nv2ProtencaoLimitadaA (Viga viga){
-		if(viga.get)
+		
 		
 	}
 

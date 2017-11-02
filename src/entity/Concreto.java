@@ -16,7 +16,7 @@ public class Concreto {
 		} else if (classeconcreto > 50){
 			this.gamac = 0.85*(1-((fck-50)/200 ));
 		}
-		
+		this.sConcreto = 0.25;
 	}
 	
 
@@ -38,6 +38,10 @@ public class Concreto {
 	
 	//classeconcreto
 	private Double classeconcreto;
+	
+	//valor para beta1 pag82 (valor fixado em 0,25)
+	private Double sConcreto;
+	
 	
 	
 		
@@ -88,6 +92,14 @@ public class Concreto {
 
 	public void setClasseconcreto(Double classeconcreto) {
 		this.classeconcreto = classeconcreto;
+	}
+
+	public Double getsConcreto() {
+		return sConcreto;
+	}
+
+	public void setsConcreto(Double sConcreto) {
+		this.sConcreto = sConcreto;
 	}
 	
 	

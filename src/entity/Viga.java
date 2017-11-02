@@ -1,11 +1,14 @@
-package entity;
+	package entity;
 
 import java.util.List;
 
 public class Viga {
 	
-	public Viga(Double i, Double j, Double k, Integer hipotese, Double gamaS, AcoArmaduraAtiva acoArmaduraAtiva, AcoArmaduraPassiva acoArmaduraPassiva, Double betaX, Double betaZ,
-			Double epsilonCD, Double deltaEpsilonPD, Double tensaoAcoAtivo, Double tensaoAcoPassivo) {
+	public Viga(Double i, Double j, Double k, Integer hipotese, Double gamaS, AcoArmaduraAtiva acoArmaduraAtiva,
+			AcoArmaduraPassiva acoArmaduraPassiva, Double betaX, Double betaZ, Double epsilonCD, Double deltaEpsilonPD,
+			Double tensaoAcoAtivo, Double tensaoAcoPassivo, Double gamaFicticio, Double gamaEndurecimento, 
+			Double umidade, Double beta1Infinito, Double fcT0, Double fcTInfinito, Double betaF0, Double mPermanentes,
+			Double mAcidentais) {
 		super();
 		this.base = i;
 		this.altura = j;
@@ -26,13 +29,22 @@ public class Viga {
 		this.acoArmaduraAtiva = acoArmaduraAtiva;
 		this.y0 = acoArmaduraAtiva.getCobrimentoMinimo() + (acoArmaduraAtiva.getDiametroBarra().getBarras()/2) ;
 		this.dP = altura - this.y0;
+		this.mPermanentes = null; //entrar com esses dados
+		this.mAcidentais = null; //entrar com esses dados
+		
 		
 		this.acoArmaduraPassiva = acoArmaduraPassiva;
-//		this.mSD = ;
-		this.tensaoAcoAtivo = tensaoAcoAtivo;
-		this.areaAcoArmaduraAtiva = (mSD * Math.pow(10, 4))/ betaZ * dP * tensaoAcoAtivo;
-		
-
+		this.mGI = mPermanentes + mAcidentais;
+		this.mGiG1 = mG1 - mGI;
+		this.mSD = 1.4*mPermanentes + 1.3*mAcidentais;
+		this.tensaoAcoAtivo = tensaoAcoAtivo; //pg63
+		//Ap pg64 H
+		//quantidade minima a ser utilizado
+		this.areaAcoAtivoMinima = (mSD * Math.pow(10, 4))/ betaZ * dP * tensaoAcoAtivo;
+		//numero minimo de cordoalhas a ser utilizado
+		this.quantidadeAco = areaAcoAtivoMinima/acoArmaduraAtiva.getArea();
+       //area de aco ativo final
+		this.areaAcoAtivoFinal = acoArmaduraAtiva.getQuantidadeCordoalhas() * acoArmaduraAtiva.getArea();
 
 		//Primeira hipótese acontece quando o cálculo for apenas da armadura ativa
 		if(this.hipotese == 1) {
@@ -54,18 +66,17 @@ public class Viga {
 				this.epsilonPD = acoArmaduraAtiva.getPreAlongamento() + deltaEpsilonPD;
 				
 				
-				
+				//pg 64 letra I
 				Double ntd = mSD/ (betaZ * dP);
-				Double ntd1 = areaAcoArmaduraAtiva * tensaoAcoAtivo;
+				Double ntd1 = areaAcoAtivoMinima * tensaoAcoAtivo;
 				//Se esses cálculos não estiverem iguais, algo no cálculo está errado.
 				if(ntd == ntd1){
 					this.forcaTracao = ntd;
 				} else {
 					System.out.println("Cálculo Errado");
 				}
-				
-				this.quantidadeAco = areaAcoArmaduraAtiva/acoArmaduraAtiva.getArea();
-		
+
+		        	
 		} 
 		// Início da segunda hipótese, quando tiver aço de armadura passiva.
 		else if (this.hipotese == 2){
@@ -82,7 +93,7 @@ public class Viga {
 				this.epsilonSD = (dS - x/dP - x) * deltaEpsilonPD;
 				this.tensaoAcoPassivo = tensaoAcoPassivo;
 				this.areaAcoArmaduraPassiva = (mSD * Math.pow(10, 4))/ betaZ * dS * tensaoAcoPassivo;
-				this.forcaTracao = areaAcoArmaduraAtiva * tensaoAcoAtivo + areaAcoArmaduraPassiva * tensaoAcoPassivo;
+				this.forcaTracao = areaAcoAtivoMinima * tensaoAcoAtivo + areaAcoArmaduraPassiva * tensaoAcoPassivo;
 				
 			}
 			
@@ -93,34 +104,36 @@ public class Viga {
 		this.tensaoAcoPd = acoArmaduraAtiva.getFpyk() / gamaS;
 		//tensão aço armadura passiva
 		this.tensaoAcoSd = acoArmaduraPassiva.getfyk() / gamaS;
-		// JV CONTINUAÇÂO
 		//Calculo das forças de tracao
 		//FORÇA de Tração na armadura ativa
-		this.forcatracaoativo = acoArmaduraAtiva.getArea() * tensaoAcoPd;
+		this.forcaTracaoAtivo = areaAcoAtivoFinal * tensaoAcoPd;
 		//Força de tração na armadura passiva
-		this.forcatracaopassivo = acoArmaduraPassiva.getArea() * tensaoAcoSd;
+		//this.forcaTracaoPassivo = acoArmaduraPassiva.getArea() * tensaoAcoSd;
 		//Força de tração total NTD
-		this.forcatracaototal = forcatracaoativo + forcatracaopassivo;
+		//this.forcaTracaoTotal = forcaTracaoAtivo + forcaTracaoPassivo;
+		this.forcaTracaoTotal = forcaTracaoAtivo;
 		//PAG 67 Equilibrio: Tracao = Compressao NCD
-		this.forcacompressaocomprimida = forcatracaototal;
-		//PG 67 Tensao no concreto (realizar o calculo"IF")
-		
+		this.forcaCompressaoComprimida = forcaTracaoTotal;
+		//PG 67 Tensao no concreto 
+		this.tensaoCD = 0.85 * (concreto.getFck()/1.4);
 		//PG68 Aréa comprimida (Acc)
-		this.areacomprimida = forcacompressaocomprimida/tensaocd;
+		this.areaComprimida = forcaCompressaoComprimida/tensaoCD;
 		
 		//pg68 altura diagrama compressao
-		this.yalturadiagramacompressao = areacomprimida/base;
+		this.yAlturaDiagramaCompressao = areaComprimida/base;
 		
 		//pg68 Posicao linha Neuta X OBS: Criar o lambaconcreto
-		this.posicaolinhaneutra = yalturadiagramacompressao/lambdaconcreto;
+		this.posicaoLinhaNeutra = yAlturaDiagramaCompressao/0.8;
 		
-		//pg68 LAMBA CONCRETO????
+		//pg68 LAMBA CONCRETO = 0.8
+		
+		//EPSLONCU 
+		this.epsilonCU = 0.035;
 		
 		//PG69 INICIO DEFORMAÇÕES ARMADURAS ATIVAS
 		this.deltaepsilonPD = ((dP - x )/x)*epsilonCU;
 		
-		//EPSLONCU ????
-		this.epsilonCU = epsilonCU;
+
 		
 		//PG69 EpsilonPD
 		this.defepsilonPD = acoArmaduraAtiva.getPreAlongamento() + deltaepsilonPD;
@@ -134,16 +147,16 @@ public class Viga {
 		this.defepsilonSD = ((dS - x)/x)*epsilonCU;
 		
 		//Deformaçao simplificada A.Ativa
-		this.epsilonYD = tensaoAcoSd / acoArmaduraPassiva.getElasticidadeacopassivo();
+		this.epsilonSYD = tensaoAcoSd / acoArmaduraPassiva.getElasticidadeacopassivo();
 		//COM ESSES RESULTADOS VERIFICA-SE CONDICAO B ELU DOMINIO 3
 		//pg69 Posição do CG da área comprimida de altura y com tensão uniforme do concreto
-		this.ylinha = yalturadiagramacompressao / 2;
+		this.ylinha = yAlturaDiagramaCompressao / 2;
 		
 		//pg70
 		this.zs = dS - ylinha;
 		this.zp = dP - ylinha;
 		//pg70 Momento resistente de cálculo
-		this.MRD = (forcatracaopassivo * zs) + (forcatracaoativo * zp);
+		this.MRD = (forcaTracaoPassivo * zs) + (forcaTracaoAtivo * zp);
 		if(!(MRD >= mSD))
 			System.out.println("Momento resistente de cálculo não atende as solicitações");
 		
@@ -157,14 +170,14 @@ public class Viga {
 		
 		this.fctkf = 1.428 * 0.7 * fctm;
 		
-		this.npinfinito = areaAcoArmaduraAtiva * acoArmaduraAtiva.getPreAlongamento() * acoArmaduraAtiva.getElasticidadeacoativo();
+		this.npinfinito = areaAcoAtivoFinal * acoArmaduraAtiva.getPreAlongamento() * acoArmaduraAtiva.getElasticidadeacoativo();
 		
 		
 		this.ep = (altura/2) - y0;
 		
-		//Verifciar qual cálculo
-		this.mCQP = null;
-		this.mCF = null;
+		
+		this.mCQP = mGI;
+		this.mCF = mGI;
 		
 		this.tensaoFibraSuperiorCF = npinfinito/area + (npinfinito * ep)/wCSup + mCF/wCSup;
 		
@@ -204,8 +217,205 @@ public class Viga {
 		//Verificação página 79
 		
 	
-	}
+		//INICIO  DIA 23/10
+		this.tensaoFibraSupProt = ((acoArmaduraAtiva.getPondPretracao() * acoArmaduraAtiva.getNp0()) / area) + ((acoArmaduraAtiva.getPondPretracao()*acoArmaduraAtiva.getNp0()*ep)/wCSup);
+		this.tensaoFibraInfProt = ((acoArmaduraAtiva.getPondPretracao() * acoArmaduraAtiva.getNp0()) / area) + ((acoArmaduraAtiva.getPondPretracao()*acoArmaduraAtiva.getNp0()*ep)/wCInf);
+		this.tensaoFibraSupPP = mG1 / wCSup;
+		this.tensaoFibraInfPP = mG1 / wCInf;
+		//resistencia do concreto ao J dias
+		this.t = 14; //UTILIZANDO 14 DIAS
+		//UTILIZANDO S=0.38
+		this.beta1 = 0.85436; 
+		this.fckJ = beta1 * (concreto.getFck());
+		//verificacões ELU simplificada (formulas 116 e 117) realizer o IF
+		
+		
+		
+		//4 passo
+		//Confirmar ordem das variáveis
+		//while((n * (tensaoFibraSupProt)+(tensaoFibraSupPP)) >= 1.2 * 0.3 * Math.pow(fckJ, 2/3))
+		this.nSup = 1.2 * 0.3 * Math.pow(fckJ, 2/3)/tensaoFibraSupProt-tensaoFibraSupPP;
+		this.nInf = Math.abs(0.7*fckJ)/tensaoFibraInfProt-tensaoFibraInfPP;
+			
+		//6 passo
+		this.h1 = null;
+		this.h2 = null;
+		this.frT = null;
+		this.asT = frT/250;
+		
+		//INICIO DOS CALCULOS DE PERDAS
+		//PERDA INICIAL - RELAXACAO
+		this.tensaoProtensao = acoArmaduraAtiva.getNp0() / acoArmaduraAtiva.getArea();
+		this.relaxacaoMilHoras = tensaoProtensao / acoArmaduraAtiva.getFptk();
+		this.relaxacaoInterpolacao = relaxacaoMilHoras;
+		if(!(t < 41.66)){
+			this.relaxacaoInterpolacao = relaxacaoMilHoras * Math.pow(((t-0)/41.67), 0.15);
+		}
+		this.relaxacaoPerdas = relaxacaoInterpolacao * tensaoProtensao;
+		this.perdaProtensaoRelaxacao = relaxacaoPerdas * acoArmaduraAtiva.getArea();
+		//fim da relaxacao
+		//Inicio retracao
+		this.gamaFicticio = null;
+		this.perimetroExternoAtmosfera = altura+altura+base+l; //descobrir onde achar este dado
+		this.gamaFicticio = null; // ENTRAR COM ESSE DADO DE ACORDO COM TABELA
+		this.hFicticio = gamaFicticio * ((2*area)/perimetroExternoAtmosfera);
+		this.temperaturaMedia = 30;
+		this.gamaEndurecimento = null;// ENTRAR COM ESSE DADO DE ACORDO COM TABELA
+		this.idadeFicticiaConcreto = gamaEndurecimento * ((temperaturaMedia+10)/30) * 30;
+		this.umidade = null;// ENTRAR COM ESSE DADO DE ACORDO COM TABELA
+		this.epsilon1S = ((-8.09)+(umidade/15)+(Math.pow(umidade, 2)/2284)+(Math.pow(umidade, 3)/133765)+(Math.pow(umidade, 4)/7608150))/Math.pow(10, 4);
+		this.epsilon2S = ((33+(2*hFicticio))/(20.8+(3*hFicticio)));
+		this.beta1Infinito = 1;
+		this.beta1 = null;// ENTRAR COM ESSE DADO DE ACORDO COM TABELA
+		this.epsilonCS = epsilon1S * epsilon2S * (1-beta1);
+		this.tensaoRetracaoInicial = epsilonCS * acoArmaduraAtiva.getElasticidadeacoativo();
+		this.forcaRetracaoInicial = tensaoRetracaoInicial * acoArmaduraAtiva.getArea();
+		this.forcaFinal1 = acoArmaduraAtiva.getNp0() - forcaRetracaoInicial - perdaProtensaoRelaxacao;
+		
+		//INICIO DA HOMOGENIZAÇÃO DA SEÇÃO PAG97
+		this.gamaHomo = 15;
+		this.areaHomogenizada = area + acoArmaduraAtiva.getArea()*(gamaHomo - 1);
+		this.yCLinhaInf = ((area - acoArmaduraAtiva.getArea()*yCInf)+(acoArmaduraAtiva.getArea()*gamaHomo*y0))/areaHomogenizada;
+		this.deltaY = yCInf - yCLinhaInf;
+		this.inerciaLinhaC = inerciaX + (areaHomogenizada*Math.pow(deltaY, 2))+(acoArmaduraAtiva.getArea()*(gamaHomo - 1)*(Math.pow(yCInf - y0, 2)));
+		//FIM DA HOMOGENIZÇÃO
+		
+		//INICIO DAS PERDAS IMEDIATAS
+		//ENCURTAMENTO IMEDIATO DO CONCRETO
+		this.eLinhaP = yCLinhaInf - y0;
+		this.gamaE = 1;
+		this.eCI = gamaE * 5600 * Math.pow(concreto.getFck(), (1/2));
+		//checar parenteses
+		this.encurtamentoImediato = (acoArmaduraAtiva.getElasticidadeacoativo()/eCI)*((forcaFinal1/areaHomogenizada)+(forcaFinal1*Math.pow(eLinhaP, 2)/inerciaLinhaC)+((mG1*Math.pow(l, 2))/8*(eLinhaP/inerciaLinhaC)));
+		//perda da força pelo encurtamento imediato
+		this.deltaPP = encurtamentoImediato * acoArmaduraAtiva.getArea();
+		//valor da força final de protensão considerando as perdas imediatas e que todos os valores estão em módulo:
+		this.forcaFinal2 = forcaFinal1 - deltaPP;
+		
+		//INICIO PERDAS PROGRESSIVAS PG90
+		this.fcT0 = null; //receber da tabela
+		this.fcTInfinito = null; //receber da tabela
+		this.fluenciaRapida = 0.8*(1-(fcT0/fcTInfinito)); //phiA
+		this.phi1C = 4.45 - (0.035 * umidade);
+		this.phi2C = (42+hFicticio)/(20+hFicticio);
+		this.phiInfinito = phi1C + phi2C;
+		this.betaF0 = null; //receber da tabela
+		this.betaFInfinito = 1;
+		this.betaD = 1;
+		this.coeficienteFluencia = fluenciaRapida +(phiInfinito*(1-betaF0))+0.4;
+		this.mG1Y = (mG1*ep)/inerciaX;
+		this.mGiG1Y = (mGiG1*ep)/inerciaX;
+		this.tensaoNormalProtensao = (forcaFinal2 / area) + (((forcaFinal2*ep)/inerciaX)*ep);
+		this.tensaoProntensaoAco = forcaFinal2/acoArmaduraAtiva.getArea();
+		this.alphaP = acoArmaduraAtiva.getElasticidadeacoativo() / eCI;
+		this.perdaRetracaoFluencia = (((epsilonCS*acoArmaduraAtiva.getElasticidadeacoativo())+(alphaP*coeficienteFluencia*mG1Y))+(mGiG1Y*coeficienteFluencia))/(1-(alphaP*(tensaoNormalProtensao/tensaoProntensaoAco)*(1+(coeficienteFluencia/2))));
+		this.valorPerdaRetracaoFluencia = perdaRetracaoFluencia * acoArmaduraAtiva.getArea();
+		this.tensaoP0 = forcaFinal2/acoArmaduraAtiva.getArea();
+		this.deltaTensaoP0 = mGiG1*(ep/inerciaX)*alphaP;
+		this.tensaoPI = tensaoP0 + deltaTensaoP0;
+		this.coeficienteFinalRelaxacaoPura = tensaoPI / acoArmaduraAtiva.getFptk();
+		this.relaxacaoPura = coeficienteFinalRelaxacaoPura*tensaoPI;
+		this.relaxacaoRelativa = relaxacaoPura*((1-(2*perdaRetracaoFluencia))/tensaoPI);
+		this.perdaProtensaoRelaxacaoAco = -(relaxacaoRelativa)*acoArmaduraAtiva.getArea();
+		this.forcaFinal3 = forcaFinal2 - perdaRetracaoFluencia - perdaProtensaoRelaxacaoAco;
+		//INICIO DAS VERIFICACOES PARA PERDAS
+		// ELS
+		if(concreto.getClasseconcreto() > 20 && concreto.getClasseconcreto() < 50){
+			this.fctm = 0.3 * Math.pow(concreto.getFck() , 2/3); 
+		} else {
+			this.fctm = 2.12 * Math.log(1+(0.11 * concreto.getFck()));
+		}
+		
+		this.fctkf = 1.428 * 0.7 * fctm;
+		
+		this.npinfinito = areaAcoAtivoFinal * acoArmaduraAtiva.getPreAlongamento() * acoArmaduraAtiva.getElasticidadeacoativo();
+		
+		
+		this.ep = (altura/2) - y0;
+		
+		
+		this.mCQP = mGI;
+		this.mCF = mGI;
+		
+		this.tensaoFibraSuperiorCF = forcaFinal3/area + (forcaFinal3 * ep)/wCSup + mCF/wCSup;
+		
+		this.tensaoFibraInferiorCF = forcaFinal3/area + (forcaFinal3 * ep)/wCInf + mCF/wCInf;
+		
+		this.tensaoFibraSuperiorCQP = forcaFinal3/area + (forcaFinal3 * ep)/wCSup + mCQP/wCSup;
+	
+		this.tensaoFibraInferiorCQP = forcaFinal3/area + (forcaFinal3 * ep)/wCInf + mCQP/wCInf;
+		
+		//ELU
+		this.preAlongamentoPerdas = ((forcaFinal3 * (1-0.25))/(200 * Math.pow(10, 9)) * area ) * 1000;
 
+		//tensão aço armadura ativa
+				this.tensaoPDPerdas = acoArmaduraAtiva.getFpyk()*(1-forcaFinal3) / gamaS;
+				//tensão aço armadura passiva
+				this.tensaoAcoSd = acoArmaduraPassiva.getfyk() / gamaS;
+				//Calculo das forças de tracao
+				//FORÇA de Tração na armadura ativa
+				this.forcaTracaoAtivo = areaAcoAtivoFinal * tensaoAcoPd;
+				//Força de tração na armadura passiva
+				//this.forcaTracaoPassivo = acoArmaduraPassiva.getArea() * tensaoAcoSd;
+				//Força de tração total NTD
+				//this.forcaTracaoTotal = forcaTracaoAtivo + forcaTracaoPassivo;
+				this.forcaTracaoTotal = forcaTracaoAtivo;
+				//PAG 67 Equilibrio: Tracao = Compressao NCD
+				this.forcaCompressaoComprimida = forcaTracaoTotal;
+				//PG 67 Tensao no concreto 
+				this.tensaoCD = 0.85 * (concreto.getFck()/1.4);
+				//PG68 Aréa comprimida (Acc)
+				this.areaComprimida = forcaCompressaoComprimida/tensaoCD;
+				
+				//pg68 altura diagrama compressao
+				this.yAlturaDiagramaCompressao = areaComprimida/base;
+				
+				//pg68 Posicao linha Neuta X OBS: Criar o lambaconcreto
+				this.posicaoLinhaNeutra = yAlturaDiagramaCompressao/0.8;
+				
+				//pg68 LAMBA CONCRETO = 0.8
+				
+				//EPSLONCU 
+				this.epsilonCU = 0.035;
+				
+				//PG69 INICIO DEFORMAÇÕES ARMADURAS ATIVAS
+				this.deltaepsilonPD = ((dP - x )/x)*epsilonCU;
+				
+
+				
+				//PG69 EpsilonPD
+				this.defepsilonPD = preAlongamentoPerdas + deltaepsilonPD;
+				
+				//pg69 EpsilonPyD
+				this.epsilonPyD = tensaoAcoPd/acoArmaduraAtiva.getElasticidadeacoativo();
+				
+				//COM OS RESULTADOS ACIMA, E FEITO A VERIFICACAO DOS ITENS C e D da verficiacao ELU dominio3 
+				//Inicio das deformações das armaduras passivas
+				//pg69 Deformação A.Ativa
+				this.defepsilonSD = ((dS - x)/x)*epsilonCU;
+				
+				//Deformaçao simplificada A.Ativa
+				this.epsilonSYD = tensaoAcoSd / acoArmaduraPassiva.getElasticidadeacopassivo();
+				//COM ESSES RESULTADOS VERIFICA-SE CONDICAO B ELU DOMINIO 3
+				//pg69 Posição do CG da área comprimida de altura y com tensão uniforme do concreto
+				this.ylinha = yAlturaDiagramaCompressao / 2;
+				
+				//pg70
+				this.zs = dS - ylinha;
+				this.zp = dP - ylinha;
+				//pg70 Momento resistente de cálculo
+				this.MRD = (forcaTracaoPassivo * zs) + (forcaTracaoAtivo * zp);
+				if(!(MRD >= mSD))
+					System.out.println("Momento resistente de cálculo não atende as solicitações");
+				
+				//FIM DA VERIFICAÇÃO DO ESTADO LIMITE ÚLTIMO
+		
+	}
+        
+	    
+	
+	
+	
 	private Double base;
 	private Double altura;
 	private Double area;
@@ -238,6 +448,11 @@ public class Viga {
 	
 	//Momento causado pelo peso próprio
 	private Double mG1;
+	//cargas acidentais
+	private Double mPermanentes;
+	private Double mAcidentais;
+	private Double mGI;
+	private Double mGiG1;
 	
 	private AcoArmaduraAtiva acoArmaduraAtiva;
 	
@@ -258,6 +473,8 @@ public class Viga {
 	
 	//Altura úlil relativa ao centro de gravidade da armadura ativa
 	private Double dP;
+	//Quantidade de cordoalhas * area de aco 
+	private Double areaAcoAtivoFinal;
 	
 	
 	//Altura úlil relativa ao centro de gravidade da armadura ativa
@@ -293,7 +510,7 @@ public class Viga {
 	private Double epsilonPD;
 	
 	//Área total do aço de armadura Ativa
-	private Double areaAcoArmaduraAtiva;
+	private Double areaAcoAtivoMinima;
 
 	//Área total do aço de armadura Ativa
 	private Double areaAcoArmaduraPassiva;
@@ -313,7 +530,7 @@ public class Viga {
 	private Double epsilonPyD;
 	
 	//pg69 deformação simplificada A.Passivo
-	private Double epsilonYD;
+	private Double epsilonSYD;
 	
 	
 	//Tensão aço ativo 2º calculo 
@@ -326,31 +543,31 @@ public class Viga {
 	private Double gamaS;
 	
 	//Força tração aço ativo
-	private Double forcatracaoativo;
+	private Double forcaTracaoAtivo;
 	
 	//Força tração aço passivo
-	private Double forcatracaopassivo;
+	private Double forcaTracaoPassivo;
 	
 	//Força tração total
-	private Double forcatracaototal;
+	private Double forcaTracaoTotal;
 	
 	//Equilibrio Tracao = Compressao pag67
-	private Double forcacompressaocomprimida;
+	private Double forcaCompressaoComprimida;
 	
 	//pg 67 tensao no concreto
-	private Double tensaocd;
+	private Double tensaoCD;
 	
 	//pg 67 Area comprimida Acc
-	private Double areacomprimida;
+	private Double areaComprimida;
 	
 	//pg67 altura do diagrama compressao
-	private Double yalturadiagramacompressao;
+	private Double yAlturaDiagramaCompressao;
 	
 	//pg67 Posicao linha Neuta X
-	private Double posicaolinhaneutra;
+	private Double posicaoLinhaNeutra;
 	
 	//pg68 Lambda concreto
-	private Double lambdaconcreto;
+	private Double lambdaConcreto;
 	
 	//pg69 Deformação armadura ativa DELTAPD
 	private Double deltaepsilonPD;
@@ -405,6 +622,138 @@ public class Viga {
 	
 	//Verificar calculo - (MOMENTO)
 	private Double mCF;
+	
+	//INICIO JV DIA 23/10
+	//VERIFICACAO PARA ELU NO ATO DA PROTENSÃO PG 79
+	
+	//1º Passo - Efeito da protensão para um cabo, ou seja, uma cordoalha ou um fio:
+	//Tensão na fibra superior e inferior causada pela protensão
+	private Double nSup;
+	private Double nInf;
+	private Double tensaoFibraSupProt;
+	private Double tensaoFibraInfProt;
+	//2º Passo - Efeito do momento (Mg1) provocado pelo peso próprio da viga:
+	private Double tensaoFibraSupPP;
+	private Double tensaoFibraInfPP;
+	//3º Passo – Resistência do concreto aos j dias, ou seja, em j dias foi aplicada a protensão:
+	private Double fckJ;
+	private Double beta1;
+	//PARA CALCULO DE BETA 1
+	private Integer t;
+	
+	//4º Passo
+
+	
+	//5º Passo
+	private Double tensaoResultanteSup;
+	private Double tensaoResultanteInf;
+	
+	//6º Passo – Cálculo da armadura passiva para ser distribuída na região tracionada:
+	private Double h1;
+	private Double h2;
+	//FT - Força resultante das tensões de tração pg83
+	private Double frT;
+	//AST – armadura passiva distribuída na região tracionada pg83
+	private Double asT;
+	
+ // INICIO DO CALCULO DE PERDAS DE PROTENSAO, NO CASO DE PRE TRACAO Pag 83
+	//Perdas Iniciais
+	//Relaxação inicial da armadura
+	//Cálculo da tensão provocada pela protensão 
+	private Double tensaoProtensao;
+	//1000 pg83
+	private Double relaxacaoMilHoras;
+	//resultado interpolacao
+	private Double relaxacaoInterpolacao;
+	private Double relaxacaoPerdas;
+	private Double relaxacaoInicial;
+	private Double perdaProtensaoRelaxacao;
+	
+	//Retracao inicial do concreto PG 84
+	//1º Passo - Cálculo da espessura fictícia da viga (hfic):
+	private Double hFicticio;
+	private Double gamaFicticio;
+	private Double perimetroExternoAtmosfera;
+	//2º Passo - Idade fictícia do concreto (t):
+	private Double idadeFicticiaConcreto;
+	private Integer temperaturaMedia;
+	private Double gamaEndurecimento;
+	//3º Passo - Cálculo do coeficiente (1s) que depende de U e da consistência do concreto:
+	private Double epsilon1S;
+	private Double umidade;
+	//4º Passo - Cálculo do coeficiente (2s) que depende de hfic em cm:
+	private Double epsilon2S;
+	//5º Passo - Encontrar coeficiente s(t0) relativo à retração no instante inicial na tabela
+	private Double betaS; 
+	//7º Passo – O valor da deformação por retração pode ser expresso abaixo:
+	private Double epsilonCS;
+	private Integer beta1Infinito; // este é igual a 1
+	//8º Passo – Cálculo da perda de tensão por retração inicial do concreto (ps):
+	private Double tensaoRetracaoInicial;
+    //9º Passo – Perda da força por retração inicial do concreto:
+	private Double forcaRetracaoInicial;
+	//Força protensao final (APENAS FORÇAS INICIAIS)
+	private Double forcaFinal1;
+	
+	//HOMOGENIZAÇÃO DA SEÇÃO PROTENDIDA PAG 97
+	//Área de concreto (A’c):
+	private Double areaHomogenizada;
+	private Integer gamaHomo;
+	private Double yCLinhaInf;
+	private Double deltaY;
+	private Double inerciaLinhaC;
+	
+	//INICIO DAS PERDAS IMEDIATAS
+	//ENCURTAMENTO IMEDIATO DO CONCRETO PG 89
+	private Double eLinhaP;
+	//módulo de elasticidade do concreto (módulo tangente inicial)
+	private Double eCI;
+	private Integer gamaE;
+	//perda da força pelo encurtamento imediato
+	private Double deltaPP;
+	//perda de tensão por encurtamento imediato
+	private Double encurtamentoImediato;
+	//valor da força final de protensão considerando as perdas imediatas e que todos os valores estão em módulo
+	private Double forcaFinal2;
+	
+	//PERDAS PROGRESSIVAS pg 90
+	private Double fcT0; // receber da tabela
+	private Double fcTInfinito; // receber da tabela
+	private Double fluenciaRapida;
+	private Double phi1C;
+	private Double phi2C;
+	//Cálculo do valor final do coeficiente de deformação lenta irreversível
+	private Double phiInfinito;
+	private Double betaF0;//receber da tabela
+	private Integer betaFInfinito;
+	private Integer betaD;
+	//Cálculo do coeficiente de fluência:
+	private Double coeficienteFluencia; //formula 168
+	private Double mG1Y;
+	private Double mGiG1Y;
+	private Double tensaoNormalMomento;
+	private Double tensaoNormalProtensao;
+	private Double tensaoProntensaoAco;
+	//Perda de tensão por retração e fluência:
+	private Double perdaRetracaoFluencia;
+	private Double alphaP;
+	//6º Passo – Valor da perda de protensão devido à fluência e retração do concreto:
+	private Double valorPerdaRetracaoFluencia;
+	private Double tensaoP0;
+	private Double deltaTensaoP0;
+	private Double tensaoPI;
+	private Double coeficienteFinalRelaxacaoPura;
+	private Double relaxacaoPura;
+	private Double relaxacaoRelativa;
+	private Double perdaProtensaoRelaxacaoAco;
+	private Double forcaFinal3;
+	private Double perdasFinais;
+	
+	//Novas variaveis para verificacoes de perdas
+	private Double preAlongamentoPerdas;
+	private Double tensaoPDPerdas;
+	
+	
 	
 	public Double getBase() {
 		return base;
@@ -607,12 +956,12 @@ public class Viga {
 		this.dominio = dominio;
 	}
 
-	public Double getAreaAcoArmaduraAtiva() {
-		return areaAcoArmaduraAtiva;
+	public Double getAreaAcoAtivoMinima() {
+		return areaAcoAtivoMinima;
 	}
 
-	public void setAreaAcoArmaduraAtiva(Double areaAcoArmaduraAtiva) {
-		this.areaAcoArmaduraAtiva = areaAcoArmaduraAtiva;
+	public void setAreaAcoAtivoMinima(Double areaAcoAtivoMinima) {
+		this.areaAcoAtivoMinima = areaAcoAtivoMinima;
 	}
 
 	public Double getY0s() {
@@ -727,76 +1076,76 @@ public class Viga {
 		this.gamaS = gamaS;
 	}
 
-	public Double getForcatracaoativo() {
-		return forcatracaoativo;
+	public Double getForcaTracaoAtivo() {
+		return forcaTracaoAtivo;
 	}
 
-	public void setForcatracaoativo(Double forcatracaoativo) {
-		this.forcatracaoativo = forcatracaoativo;
+	public void setForcaTracaoAtivo(Double forcaTracaoAtivo) {
+		this.forcaTracaoAtivo = forcaTracaoAtivo;
 	}
 
-	public Double getForcatracaopassivo() {
-		return forcatracaopassivo;
+	public Double getForcaTracaoPassivo() {
+		return forcaTracaoPassivo;
 	}
 
-	public void setForcatracaopassivo(Double forcatracaopassivo) {
-		this.forcatracaopassivo = forcatracaopassivo;
+	public void setForcaTracaoPassivo(Double forcaTracaoPassivo) {
+		this.forcaTracaoPassivo = forcaTracaoPassivo;
 	}
 
-	public Double getForcatracaototal() {
-		return forcatracaototal;
+	public Double getForcaTracaoTotal() {
+		return forcaTracaoTotal;
 	}
 
-	public void setForcatracaototal(Double forcatracaototal) {
-		this.forcatracaototal = forcatracaototal;
+	public void setForcaTracaoTotal(Double forcaTracaoTotal) {
+		this.forcaTracaoTotal = forcaTracaoTotal;
 	}
 
-	public Double getForcacompressaocomprimida() {
-		return forcacompressaocomprimida;
+	public Double getForcaCompressaoComprimida() {
+		return forcaCompressaoComprimida;
 	}
 
-	public void setForcacompressaocomprimida(Double forcacompressaocomprimida) {
-		this.forcacompressaocomprimida = forcacompressaocomprimida;
+	public void setForcaCompressaoComprimida(Double forcaCompressaoComprimida) {
+		this.forcaCompressaoComprimida = forcaCompressaoComprimida;
 	}
 
-	public Double getTensaocd() {
-		return tensaocd;
+	public Double getTensaoCD() {
+		return tensaoCD;
 	}
 
-	public void setTensaocd(Double tensaocd) {
-		this.tensaocd = tensaocd;
+	public void setTensaoCD(Double tensaoCD) {
+		this.tensaoCD = tensaoCD;
 	}
 
-	public Double getAreacomprimida() {
-		return areacomprimida;
+	public Double getAreaComprimida() {
+		return areaComprimida;
 	}
 
-	public void setAreacomprimida(Double areacomprimida) {
-		this.areacomprimida = areacomprimida;
+	public void setAreaComprimida(Double areaComprimida) {
+		this.areaComprimida = areaComprimida;
 	}
 
-	public Double getYalturadiagramacompressao() {
-		return yalturadiagramacompressao;
+	public Double getyAlturaDiagramaCompressao() {
+		return yAlturaDiagramaCompressao;
 	}
 
-	public void setYalturadiagramacompressao(Double yalturadiagramacompressao) {
-		this.yalturadiagramacompressao = yalturadiagramacompressao;
+	public void setyAlturaDiagramaCompressao(Double yAlturaDiagramaCompressao) {
+		this.yAlturaDiagramaCompressao = yAlturaDiagramaCompressao;
 	}
 
-	public Double getPosicaolinhaneutra() {
-		return posicaolinhaneutra;
+	public Double getPosicaoLinhaNeutra() {
+		return posicaoLinhaNeutra;
 	}
 
-	public void setPosicaolinhaneutra(Double posicaolinhaneutra) {
-		this.posicaolinhaneutra = posicaolinhaneutra;
+	public void setPosicaoLinhaNeutra(Double posicaoLinhaNeutra) {
+		this.posicaoLinhaNeutra = posicaoLinhaNeutra;
 	}
 
-	public Double getLambdaconcreto() {
-		return lambdaconcreto;
+	public Double getLambdaConcreto() {
+		return lambdaConcreto;
 	}
 
-	public void setLambdaconcreto(Double lambdaconcreto) {
-		this.lambdaconcreto = lambdaconcreto;
+	public void setLambdaConcreto(Double lambdaConcreto) {
+		this.lambdaConcreto = lambdaConcreto;
 	}
 
 	public Double getDeltaepsilonPD() {
@@ -823,12 +1172,12 @@ public class Viga {
 		this.defepsilonPD = defepsilonPD;
 	}
 
-	public Double getEpsilonYD() {
-		return epsilonYD;
+	public Double getEpsilonSYD() {
+		return epsilonSYD;
 	}
 
-	public void setEpsilonYD(Double epsilonYD) {
-		this.epsilonYD = epsilonYD;
+	public void setEpsilonSYD(Double epsilonSYD) {
+		this.epsilonSYD = epsilonSYD;
 	}
 
 	public Double getDefepsilonSD() {
@@ -877,6 +1226,730 @@ public class Viga {
 
 	public void setMRD1(Double mRD1) {
 		MRD1 = mRD1;
+	}
+
+	public Double getFctm() {
+		return fctm;
+	}
+
+	public void setFctm(Double fctm) {
+		this.fctm = fctm;
+	}
+
+	public Double getFctkf() {
+		return fctkf;
+	}
+
+	public void setFctkf(Double fctkf) {
+		this.fctkf = fctkf;
+	}
+
+	public Double getNpinfinito() {
+		return npinfinito;
+	}
+
+	public void setNpinfinito(Double npinfinito) {
+		this.npinfinito = npinfinito;
+	}
+
+	public Double getTensaoFibraSuperiorCQP() {
+		return tensaoFibraSuperiorCQP;
+	}
+
+	public void setTensaoFibraSuperiorCQP(Double tensaoFibraSuperiorCQP) {
+		this.tensaoFibraSuperiorCQP = tensaoFibraSuperiorCQP;
+	}
+
+	public Double getTensaoFibraInferiorCQP() {
+		return tensaoFibraInferiorCQP;
+	}
+
+	public void setTensaoFibraInferiorCQP(Double tensaoFibraInferiorCQP) {
+		this.tensaoFibraInferiorCQP = tensaoFibraInferiorCQP;
+	}
+
+	public Double getTensaoFibraSuperiorCF() {
+		return tensaoFibraSuperiorCF;
+	}
+
+	public void setTensaoFibraSuperiorCF(Double tensaoFibraSuperiorCF) {
+		this.tensaoFibraSuperiorCF = tensaoFibraSuperiorCF;
+	}
+
+	public Double getTensaoFibraInferiorCF() {
+		return tensaoFibraInferiorCF;
+	}
+
+	public void setTensaoFibraInferiorCF(Double tensaoFibraInferiorCF) {
+		this.tensaoFibraInferiorCF = tensaoFibraInferiorCF;
+	}
+
+	public Double getEp() {
+		return ep;
+	}
+
+	public void setEp(Double ep) {
+		this.ep = ep;
+	}
+
+	public Double getmCQP() {
+		return mCQP;
+	}
+
+	public void setmCQP(Double mCQP) {
+		this.mCQP = mCQP;
+	}
+
+	public Double getmCF() {
+		return mCF;
+	}
+
+	public void setmCF(Double mCF) {
+		this.mCF = mCF;
+	}
+
+	public Double gettensaoFibraSupProt() {
+		return tensaoFibraSupProt;
+	}
+
+	public void settensaoFibraSupProt(Double tensaoFibraSupProt) {
+		this.tensaoFibraSupProt = tensaoFibraSupProt;
+	}
+
+	public Double getTensaoFibraInfProt() {
+		return tensaoFibraInfProt;
+	}
+
+	public void setTensaoFibraInfProt(Double tensaoFibraInfProt) {
+		this.tensaoFibraInfProt = tensaoFibraInfProt;
+	}
+
+	public Double getTensaoFibraSupPP() {
+		return tensaoFibraSupPP;
+	}
+
+	public void setTensaoFibraSupPP(Double tensaoFibraSupPP) {
+		this.tensaoFibraSupPP = tensaoFibraSupPP;
+	}
+
+	public Double getTensaoFibraInfPP() {
+		return tensaoFibraInfPP;
+	}
+
+	public void setTensaoFibraInfPP(Double tensaoFibraInfPP) {
+		this.tensaoFibraInfPP = tensaoFibraInfPP;
+	}
+
+	public Double getFckJ() {
+		return fckJ;
+	}
+
+	public void setFckJ(Double fckJ) {
+		this.fckJ = fckJ;
+	}
+
+	public Double getBeta1() {
+		return beta1;
+	}
+
+	public void setBeta1(Double beta1) {
+		this.beta1 = beta1;
+	}
+
+	public Integer getT() {
+		return t;
+	}
+
+	public void setT(Integer t) {
+		this.t = t;
+	}
+
+	public Double getTensaoFibraSupProt() {
+		return tensaoFibraSupProt;
+	}
+
+	public void setTensaoFibraSupProt(Double tensaoFibraSupProt) {
+		this.tensaoFibraSupProt = tensaoFibraSupProt;
+	}
+
+	public Double getTensaoResultanteSup() {
+		return tensaoResultanteSup;
+	}
+
+	public void setTensaoResultanteSup(Double tensaoResultanteSup) {
+		this.tensaoResultanteSup = tensaoResultanteSup;
+	}
+
+	public Double getTensaoResultanteInf() {
+		return tensaoResultanteInf;
+	}
+
+	public void setTensaoResultanteInf(Double tensaoResultanteInf) {
+		this.tensaoResultanteInf = tensaoResultanteInf;
+	}
+
+	public Double getH1() {
+		return h1;
+	}
+
+	public void setH1(Double h1) {
+		this.h1 = h1;
+	}
+
+	public Double getH2() {
+		return h2;
+	}
+
+	public void setH2(Double h2) {
+		this.h2 = h2;
+	}
+
+	public Double getFrT() {
+		return frT;
+	}
+
+	public void setFrT(Double frT) {
+		this.frT = frT;
+	}
+
+	public Double getAsT() {
+		return asT;
+	}
+
+	public void setAsT(Double asT) {
+		this.asT = asT;
+	}
+
+	public Double getTensaoProtensao() {
+		return tensaoProtensao;
+	}
+
+	public void setTensaoProtensao(Double tensaoProtensao) {
+		this.tensaoProtensao = tensaoProtensao;
+	}
+
+	public Double getRelaxacaoMilHoras() {
+		return relaxacaoMilHoras;
+	}
+
+	public void setRelaxacaoMilHoras(Double relaxacaoMilHoras) {
+		this.relaxacaoMilHoras = relaxacaoMilHoras;
+	}
+
+	public Double getRelaxacaoInterpolacao() {
+		return relaxacaoInterpolacao;
+	}
+
+	public void setRelaxacaoInterpolacao(Double relaxacaoInterpolacao) {
+		this.relaxacaoInterpolacao = relaxacaoInterpolacao;
+	}
+
+	public Double getRelaxacaoPerdas() {
+		return relaxacaoPerdas;
+	}
+
+	public void setRelaxacaoPerdas(Double relaxacaoPerdas) {
+		this.relaxacaoPerdas = relaxacaoPerdas;
+	}
+
+	public Double getRelaxacaoInicial() {
+		return relaxacaoInicial;
+	}
+
+	public void setRelaxacaoInicial(Double relaxacaoInicial) {
+		this.relaxacaoInicial = relaxacaoInicial;
+	}
+
+	public Double getPerdaProtensaoRelaxacao() {
+		return perdaProtensaoRelaxacao;
+	}
+
+	public void setPerdaProtensaoRelaxacao(Double perdaProtensaoRelaxacao) {
+		this.perdaProtensaoRelaxacao = perdaProtensaoRelaxacao;
+	}
+
+	public Double gethFicticio() {
+		return hFicticio;
+	}
+
+	public void sethFicticio(Double hFicticio) {
+		this.hFicticio = hFicticio;
+	}
+
+	public Double getGamaFicticio() {
+		return gamaFicticio;
+	}
+
+	public void setGamaFicticio(Double gamaFicticio) {
+		this.gamaFicticio = gamaFicticio;
+	}
+
+	public Double getPerimetroExternoAtmosfera() {
+		return perimetroExternoAtmosfera;
+	}
+
+	public void setPerimetroExternoAtmosfera(Double perimetroExternoAtmosfera) {
+		this.perimetroExternoAtmosfera = perimetroExternoAtmosfera;
+	}
+
+	public Double getIdadeFicticiaConcreto() {
+		return idadeFicticiaConcreto;
+	}
+
+	public void setIdadeFicticiaConcreto(Double idadeFicticiaConcreto) {
+		this.idadeFicticiaConcreto = idadeFicticiaConcreto;
+	}
+
+	public Integer getTemperaturaMedia() {
+		return temperaturaMedia;
+	}
+
+	public void setTemperaturaMedia(Integer temperaturaMedia) {
+		this.temperaturaMedia = temperaturaMedia;
+	}
+
+	public Double getGamaEndurecimento() {
+		return gamaEndurecimento;
+	}
+
+	public void setGamaEndurecimento(Double gamaEndurecimento) {
+		this.gamaEndurecimento = gamaEndurecimento;
+	}
+
+	public Double getEpsilon1S() {
+		return epsilon1S;
+	}
+
+	public void setEpsilon1S(Double epsilon1s) {
+		epsilon1S = epsilon1s;
+	}
+
+	public Double getUmidade() {
+		return umidade;
+	}
+
+	public void setUmidade(Double umidade) {
+		this.umidade = umidade;
+	}
+
+	public Double getEpsilon2S() {
+		return epsilon2S;
+	}
+
+	public void setEpsilon2S(Double epsilon2s) {
+		epsilon2S = epsilon2s;
+	}
+
+	public Double getBetaS() {
+		return betaS;
+	}
+
+	public void setBetaS(Double betaS) {
+		this.betaS = betaS;
+	}
+
+	public Double getEpsilonCS() {
+		return epsilonCS;
+	}
+
+	public void setEpsilonCS(Double epsilonCS) {
+		this.epsilonCS = epsilonCS;
+	}
+
+
+
+	public Integer getBeta1Infinito() {
+		return beta1Infinito;
+	}
+
+	public void setBeta1Infinito(Integer beta1Infinito) {
+		this.beta1Infinito = beta1Infinito;
+	}
+
+	public Double getTensaoRetracaoInicial() {
+		return tensaoRetracaoInicial;
+	}
+
+	public void setTensaoRetracaoInicial(Double tensaoRetracaoInicial) {
+		this.tensaoRetracaoInicial = tensaoRetracaoInicial;
+	}
+
+	public Double getForcaRetracaoInicial() {
+		return forcaRetracaoInicial;
+	}
+
+	public void setForcaRetracaoInicial(Double forcaRetracaoInicial) {
+		this.forcaRetracaoInicial = forcaRetracaoInicial;
+	}
+
+	public Double getForcaFinal1() {
+		return forcaFinal1;
+	}
+
+	public void setForcaFinal1(Double forcaFinal1) {
+		this.forcaFinal1 = forcaFinal1;
+	}
+
+	public Double getAreaHomogenizada() {
+		return areaHomogenizada;
+	}
+
+	public void setAreaHomogenizada(Double areaHomogenizada) {
+		this.areaHomogenizada = areaHomogenizada;
+	}
+
+	public Integer getGamaHomo() {
+		return gamaHomo;
+	}
+
+	public void setGamaHomo(Integer gamaHomo) {
+		this.gamaHomo = gamaHomo;
+	}
+
+	public Double getyCLinhaInf() {
+		return yCLinhaInf;
+	}
+
+	public void setyCLinhaInf(Double yCLinhaInf) {
+		this.yCLinhaInf = yCLinhaInf;
+	}
+
+	public Double getDeltaY() {
+		return deltaY;
+	}
+
+	public void setDeltaY(Double deltaY) {
+		this.deltaY = deltaY;
+	}
+
+	public Double getInerciaLinhaC() {
+		return inerciaLinhaC;
+	}
+
+	public void setInerciaLinhaC(Double inerciaLinhaC) {
+		this.inerciaLinhaC = inerciaLinhaC;
+	}
+
+	public Double geteLinhaP() {
+		return eLinhaP;
+	}
+
+	public void seteLinhaP(Double eLinhaP) {
+		this.eLinhaP = eLinhaP;
+	}
+
+	public Double geteCI() {
+		return eCI;
+	}
+
+	public void seteCI(Double eCI) {
+		this.eCI = eCI;
+	}
+
+	public Integer getGamaE() {
+		return gamaE;
+	}
+
+	public void setGamaE(Integer gamaE) {
+		this.gamaE = gamaE;
+	}
+
+	public Double getDeltaPP() {
+		return deltaPP;
+	}
+
+	public void setDeltaPP(Double deltaPP) {
+		this.deltaPP = deltaPP;
+	}
+
+	public Double getEncurtamentoImediato() {
+		return encurtamentoImediato;
+	}
+
+	public void setEncurtamentoImediato(Double encurtamentoImediato) {
+		this.encurtamentoImediato = encurtamentoImediato;
+	}
+
+	public Double getForcaFinal2() {
+		return forcaFinal2;
+	}
+
+	public void setForcaFinal2(Double forcaFinal2) {
+		this.forcaFinal2 = forcaFinal2;
+	}
+
+	public Double getFcT0() {
+		return fcT0;
+	}
+
+	public void setFcT0(Double fcT0) {
+		this.fcT0 = fcT0;
+	}
+
+	public Double getFcTInfinito() {
+		return fcTInfinito;
+	}
+
+	public void setFcTInfinito(Double fcTInfinito) {
+		this.fcTInfinito = fcTInfinito;
+	}
+
+	public Double getFluenciaRapida() {
+		return fluenciaRapida;
+	}
+
+	public void setFluenciaRapida(Double fluenciaRapida) {
+		this.fluenciaRapida = fluenciaRapida;
+	}
+
+	public Double getPhi1C() {
+		return phi1C;
+	}
+
+	public void setPhi1C(Double phi1c) {
+		phi1C = phi1c;
+	}
+
+	public Double getPhi2C() {
+		return phi2C;
+	}
+
+	public void setPhi2C(Double phi2c) {
+		phi2C = phi2c;
+	}
+
+	public Double getPhiInfinito() {
+		return phiInfinito;
+	}
+
+	public void setPhiInfinito(Double phiInfinito) {
+		this.phiInfinito = phiInfinito;
+	}
+
+	public Double getBetaF0() {
+		return betaF0;
+	}
+
+	public void setBetaF0(Double betaF0) {
+		this.betaF0 = betaF0;
+	}
+
+	public Integer getBetaFInfinito() {
+		return betaFInfinito;
+	}
+
+	public void setBetaFInfinito(Integer betaFInfinito) {
+		this.betaFInfinito = betaFInfinito;
+	}
+
+	public Integer getBetaD() {
+		return betaD;
+	}
+
+	public void setBetaD(Integer betaD) {
+		this.betaD = betaD;
+	}
+
+
+	public Double getCoeficienteFluencia() {
+		return coeficienteFluencia;
+	}
+
+	public void setCoeficienteFluencia(Double coeficienteFluencia) {
+		this.coeficienteFluencia = coeficienteFluencia;
+	}
+
+
+	public Double getTensaoNormalMomento() {
+		return tensaoNormalMomento;
+	}
+
+	public void setTensaoNormalMomento(Double tensaoNormalMomento) {
+		this.tensaoNormalMomento = tensaoNormalMomento;
+	}
+
+	public Double getTensaoNormalProtensao() {
+		return tensaoNormalProtensao;
+	}
+
+	public void setTensaoNormalProtensao(Double tensaoNormalProtensao) {
+		this.tensaoNormalProtensao = tensaoNormalProtensao;
+	}
+
+	public Double getTensaoProntensaoAco() {
+		return tensaoProntensaoAco;
+	}
+
+	public void setTensaoProntensaoAco(Double tensaoProntensaoAco) {
+		this.tensaoProntensaoAco = tensaoProntensaoAco;
+	}
+
+	public Double getPerdaRetracaoFluencia() {
+		return perdaRetracaoFluencia;
+	}
+
+	public void setPerdaRetracaoFluencia(Double perdaRetracaoFluencia) {
+		this.perdaRetracaoFluencia = perdaRetracaoFluencia;
+	}
+
+	public Double getAlphaP() {
+		return alphaP;
+	}
+
+	public void setAlphaP(Double alphaP) {
+		this.alphaP = alphaP;
+	}
+
+	public Double getmPermanentes() {
+		return mPermanentes;
+	}
+
+	public void setmPermanentes(Double mPermanentes) {
+		this.mPermanentes = mPermanentes;
+	}
+
+	public Double getmAcidentais() {
+		return mAcidentais;
+	}
+
+	public void setmAcidentais(Double mAcidentais) {
+		this.mAcidentais = mAcidentais;
+	}
+
+	public Double getmGI() {
+		return mGI;
+	}
+
+	public void setmGI(Double mGI) {
+		this.mGI = mGI;
+	}
+
+	public Double getmGiG1() {
+		return mGiG1;
+	}
+
+	public void setmGiG1(Double mGiG1) {
+		this.mGiG1 = mGiG1;
+	}
+
+	public Double getmG1Y() {
+		return mG1Y;
+	}
+
+	public void setmG1Y(Double mG1Y) {
+		this.mG1Y = mG1Y;
+	}
+
+	public Double getmGiG1Y() {
+		return mGiG1Y;
+	}
+
+	public void setmGiG1Y(Double mGiG1Y) {
+		this.mGiG1Y = mGiG1Y;
+	}
+
+	public Double getValorPerdaRetracaoFluencia() {
+		return valorPerdaRetracaoFluencia;
+	}
+
+	public void setValorPerdaRetracaoFluencia(Double valorPerdaRetracaoFluencia) {
+		this.valorPerdaRetracaoFluencia = valorPerdaRetracaoFluencia;
+	}
+
+	public Double getTensaoP0() {
+		return tensaoP0;
+	}
+
+	public void setTensaoP0(Double tensaoP0) {
+		this.tensaoP0 = tensaoP0;
+	}
+
+	public Double getDeltaTensaoP0() {
+		return deltaTensaoP0;
+	}
+
+	public void setDeltaTensaoP0(Double deltaTensaoP0) {
+		this.deltaTensaoP0 = deltaTensaoP0;
+	}
+
+	public Double getTensaoPI() {
+		return tensaoPI;
+	}
+
+	public void setTensaoPI(Double tensaoPI) {
+		this.tensaoPI = tensaoPI;
+	}
+
+	public Double getRelaxacaoPura() {
+		return relaxacaoPura;
+	}
+
+	public void setRelaxacaoPura(Double relaxacaoPura) {
+		this.relaxacaoPura = relaxacaoPura;
+	}
+
+	public Double getRelaxacaoRelativa() {
+		return relaxacaoRelativa;
+	}
+
+	public void setRelaxacaoRelativa(Double relaxacaoRelativa) {
+		this.relaxacaoRelativa = relaxacaoRelativa;
+	}
+
+	public Double getPerdaProtensaoRelaxacaoAco() {
+		return perdaProtensaoRelaxacaoAco;
+	}
+
+	public void setPerdaProtensaoRelaxacaoAco(Double perdaProtensaoRelaxacaoAco) {
+		this.perdaProtensaoRelaxacaoAco = perdaProtensaoRelaxacaoAco;
+	}
+
+	public Double getForcaFinal3() {
+		return forcaFinal3;
+	}
+
+	public void setForcaFinal3(Double forcaFinal3) {
+		this.forcaFinal3 = forcaFinal3;
+	}
+
+	public Double getPerdasFinais() {
+		return perdasFinais;
+	}
+
+	public void setPerdasFinais(Double perdasFinais) {
+		this.perdasFinais = perdasFinais;
+	}
+
+	public Double getCoeficienteFinalRelaxacaoPura() {
+		return coeficienteFinalRelaxacaoPura;
+	}
+
+	public void setCoeficienteFinalRelaxacaoPura(Double coeficienteFinalRelaxacaoPura) {
+		this.coeficienteFinalRelaxacaoPura = coeficienteFinalRelaxacaoPura;
+	}
+
+	public Double getAreaAcoAtivoFinal() {
+		return areaAcoAtivoFinal;
+	}
+
+	public void setAreaAcoAtivoFinal(Double areaAcoAtivoFinal) {
+		this.areaAcoAtivoFinal = areaAcoAtivoFinal;
+	}
+
+	public Double getPreAlongamentoPerdas() {
+		return preAlongamentoPerdas;
+	}
+
+	public void setPreAlongamentoPerdas(Double preAlongamentoPerdas) {
+		this.preAlongamentoPerdas = preAlongamentoPerdas;
+	}
+
+	public Double getTensaoPDPerdas() {
+		return tensaoPDPerdas;
+	}
+
+	public void setTensaoPDPerdas(Double tensaoPDPerdas) {
+		this.tensaoPDPerdas = tensaoPDPerdas;
 	}
 
 	
