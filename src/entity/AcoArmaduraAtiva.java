@@ -7,6 +7,7 @@ public class AcoArmaduraAtiva {
 			Double massa, Double fptk, Double fpyk, Integer quantidadeCordoalhas) {
 		super();
 		this.numerosFrios = numerosFrios;
+		//Diametro da barra
 		this.nominal = nominal;
 		this.area = area;
 		this.massa = massa;
@@ -19,7 +20,6 @@ public class AcoArmaduraAtiva {
 		this.tensaoFpyk = 0.9 * fpyk; //definido apenas como Relaxacao Normal
 		this.cobrimentoMinimo = 35; //mm
 		this.elasticidadeacoativo = 200 * Math.pow(10, 3); //verificar unidade
-		this.pondPretracao = null;
 		this.quantidadeCordoalhas = quantidadeCordoalhas;
 		
 		
