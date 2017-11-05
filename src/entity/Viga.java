@@ -49,12 +49,13 @@ public class Viga {
 		
 		//Contas para processo K6
 		//MSD DE KNm PARA MNm
-		//this.mSD = (1.4*mPermanentes + 1.3*mAcidentais)/1000; //ALTERAR MSD
-		this.mSD = 0.16990;
+		this.mSD = (1.4*mPermanentes + 1.3*mAcidentais)/1000; //ALTERAR MSD
+		//this.mSD = 0.1699;
 
 		this.y0 = acoArmaduraAtiva.getCobrimentoMinimo() + (acoArmaduraAtiva.getNominal()/2) ;
 		this.dP = altura - this.y0;
 		this.k6 = (base * (Math.pow(dP, 2)))/(this.mSD);
+		
 		
 		this.betaX = Double.parseDouble(JOptionPane.showInputDialog("Valor de k6: "+ k6 + "\nDigite o Valor de BetaX: ")); 
 		this.betaZ = Double.parseDouble(JOptionPane.showInputDialog("Digite o Valor de BetaZ: ")); 
@@ -97,8 +98,10 @@ public class Viga {
 		}
 		//numero minimo de cordoalhas a ser utilizado
 		this.quantidadeAco = areaAcoAtivoMinima/(acoArmaduraAtiva.getArea()*Math.pow(10, 4));
-	       //area de aco ativo final
-			this.areaAcoAtivoFinal = acoArmaduraAtiva.getQuantidadeCordoalhas() * (acoArmaduraAtiva.getArea()*Math.pow(10, 4));
+	       
+		this.quantidadeCordoalhas2 = Double.parseDouble(JOptionPane.showInputDialog("Nº mín de Cordoalhas: " + quantidadeAco + "\nDigite a quantidade: "));
+		//area de aco ativo final
+			this.areaAcoAtivoFinal =  quantidadeCordoalhas2 * (acoArmaduraAtiva.getArea()*Math.pow(10, 4));
 		//FORMULA 36
 			this.forcaTracao = areaAcoAtivoMinima * tensaoAcoAtivo;
 		
@@ -179,7 +182,7 @@ public class Viga {
 		//this.tensaoAcoSd = acoArmaduraPassiva.getfyk() / gamaS;
 		//Calculo das forças de tracao
 		//FORÇA de Tração na armadura ativa
-		this.forcaTracaoAtivo = (areaAcoAtivoFinal * tensaoAcoPd)/10000; //dividindo para transformar
+		this.forcaTracaoAtivo = ((areaAcoAtivoFinal*Math.pow(10, -4)) * tensaoAcoPd); //dividindo para transformar
 		//Força de tração na armadura passiva
 		//this.forcaTracaoPassivo = acoArmaduraPassiva.getArea() * tensaoAcoSd;
 		//Força de tração total NTD
@@ -193,10 +196,10 @@ public class Viga {
 		this.areaComprimida = forcaTracaoTotal/tensaoCD; //m²
 		
 		//pg68 altura diagrama compressao
-		this.yAlturaDiagramaCompressao = areaComprimida/base;
+		this.yAlturaDiagramaCompressao = areaComprimida/base; //m
 		
 		//pg68 Posicao linha Neuta X OBS: Criar o lambaconcreto
-		this.posicaoLinhaNeutra = yAlturaDiagramaCompressao/0.8;
+		this.posicaoLinhaNeutra = yAlturaDiagramaCompressao/0.8; //m
 		
 		//pg68 LAMBA CONCRETO = 0.8
 		
@@ -235,7 +238,7 @@ public class Viga {
 		//this.MRD = (forcaTracaoPassivo * zs) + (forcaTracaoAtivo * zp);
 		this.MRD = forcaTracaoAtivo*zp;
 		if(!(MRD >= mSD)){
-			JOptionPane.showMessageDialog(null, "Momento resistente de cálculo não atende as solicitações", "Erro", JOptionPane.ERROR_MESSAGE);
+		//	JOptionPane.showMessageDialog(null, "Momento resistente de cálculo não atende as solicitações", "Erro", JOptionPane.ERROR_MESSAGE);
 //			throw new Exception("");
 		}
 		//FIM DA VERIFICAÇÃO DO ESTADO LIMITE ÚLTIMO
@@ -246,9 +249,9 @@ public class Viga {
 			this.fctm = 2.12 * Math.log(1+(0.11 * concreto.getFck()));
 		}
 		
-		this.fctkf = (1.428 * 0.7 * fctm)*1000;//Verificar unidade (x1000)
-		
-		this.npinfinito = (-(areaAcoAtivoFinal * acoArmaduraAtiva.getPreAlongamento() * (acoArmaduraAtiva.getElasticidadeacoativo()/10000000)));//Verificar unidade (x100)
+		this.fctkf = (1.428 * 0.7 * fctm)*1000;//KPA
+		//força de compressa (negativa)
+		this.npinfinito = (-((areaAcoAtivoFinal*Math.pow(10, -4)) * acoArmaduraAtiva.getPreAlongamento() * (acoArmaduraAtiva.getElasticidadeacoativo()/Math.pow(10, 3))));//Verificar unidade (x100)
 		
 		
 		this.ep = (altura/2) - y0;
@@ -275,7 +278,8 @@ public class Viga {
 //			throw new Exception("");
 		}
 		
-		else if( !(tensaoFibraSuperiorCF <= Math.abs(0.6 * concreto.getFck()) )){
+		else if( !(tensaoFibraSuperiorCF <= (Math.abs(0.6 * concreto.getFck())*1000) )){
+			System.out.println("A fibra foi fissurada");
 			//JOptionPane.showMessageDialog(null, "A fibra foi fissurada", "Erro", JOptionPane.ERROR_MESSAGE);
 //			throw new Exception("");
 		}
@@ -283,12 +287,14 @@ public class Viga {
 	
 		
 		else if(! (tensaoFibraInferiorCQP <= 0)){
+			System.out.println("A fibra foi fissurada");
 			//JOptionPane.showMessageDialog(null, "A fibra foi fissurada", "Erro", JOptionPane.ERROR_MESSAGE);
 //			throw new Exception("");
 		}
 		
 		
 		else if( !(tensaoFibraSuperiorCQP <= Math.abs(0.6 * concreto.getFck()))){
+			System.out.println("A fibra foi fissurada");
 			//JOptionPane.showMessageDialog(null, "A fibra foi fissurada", "Erro", JOptionPane.ERROR_MESSAGE);
 //			throw new Exception("");
 		}
@@ -316,7 +322,6 @@ public class Viga {
 		
 		
 		//4 passo
-		//Confirmar ordem das variáveis
 		//while((n * (tensaoFibraSupProt)+(tensaoFibraSupPP)) >= 1.2 * 0.3 * Math.pow(fckJ, 0.66666))
 		this.nSup = (1.2 * ((0.3 * Math.pow(fckJ, 0.66666))*1000)-tensaoFibraSupPP)/tensaoFibraSupProt;
 		this.nInf = (-((0.7*(fckJ*1000))+tensaoFibraInfPP))/tensaoFibraInfProt;
@@ -356,8 +361,8 @@ public class Viga {
 		//Inicio retracao
 		this.umidade = umidade;// ENTRAR COM ESSE DADO DE ACORDO COM TABELA
 		this.gamaFicticio = 1+Math.pow(2.718281828, (-7.8+(0.1*umidade)));
-		//this.perimetroExternoAtmosfera = altura+altura+base+l; 
-		this.perimetroExternoAtmosfera = 1.5;// retirar
+		this.perimetroExternoAtmosfera = altura+altura+base+l; 
+		//this.perimetroExternoAtmosfera = 1.5;// retirar
 		this.hFicticio = gamaFicticio * ((2*area)/perimetroExternoAtmosfera);
 		this.temperaturaMedia = 30;
 		this.gamaEndurecimento = gamaEndurecimento;// ENTRAR COM ESSE DADO DE ACORDO COM TABELA
@@ -584,6 +589,8 @@ public class Viga {
 	
 	//Altura úlil relativa ao centro de gravidade da armadura ativa
 	private Double dP;
+	//Quantidade Cordoalhas
+	private Double quantidadeCordoalhas2;
 	//Quantidade de cordoalhas * area de aco 
 	private Double areaAcoAtivoFinal;
 	
@@ -1127,6 +1134,16 @@ public class Viga {
 
 	public void setForcaTracao(Double forcaTracao) {
 		this.forcaTracao = forcaTracao;
+	}
+
+
+
+	public Double getQuantidadeCordoalhas2() {
+		return quantidadeCordoalhas2;
+	}
+
+	public void setQuantidadeCordoalhas2(Double quantidadeCordoalhas2) {
+		this.quantidadeCordoalhas2 = quantidadeCordoalhas2;
 	}
 
 	public Double getQuantidadeAco() {

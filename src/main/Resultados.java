@@ -69,6 +69,29 @@ public class Resultados {
 	private JTextField textFieldnpinfinito;
 	private JTextField textFieldfctkf;
 	private JTextField textFieldtensaoFibraInferiorCF;
+	private JTextField textFieldtensaoFibraSupProt;
+	private JTextField textFieldtensaoFibraInfProt;
+	private JTextField textFieldtensaoFibraSupPP;
+	private JTextField textFieldtensaoFibraInfPP;
+	private JTextField textFieldbeta1;
+	private JTextField textFieldfckJ;
+	private JTextField textFieldnSup;
+	private JTextField textFieldnInf;
+	private JTextField textFieldfluenciaRapida;
+	private JTextField textFieldphi1C;
+	private JTextField textFieldphi2C;
+	private JTextField textFieldphiInfinito;
+	private JTextField textFieldcoeficienteFluencia;
+	private JTextField textFieldmG1Y;
+	private JTextField textFieldmGiG1Y;
+	private JTextField textFieldtensaoNormalProtensao;
+	private JTextField textFieldtensaoProntensaoAco;
+	private JTextField textFieldperdaRetracaoFluencia;
+	private JTextField textFieldvalorPerdaRetracaoFluencia;
+	private JTextField textFieldrelaxacaoPura;
+	private JTextField textFieldrelaxacaoRelativa;
+	private JTextField textFieldperdaProtensaoRelaxacaoAco;
+	private JTextField textFieldforcaFinal3;
 
 	/**
 	 * Launch the application.
@@ -85,13 +108,13 @@ public class Resultados {
 	 */
 	private void initialize(Viga viga) {
 		frame = new JFrame();
-		frame.setBounds(100, 100, 796, 329);
+		frame.setBounds(100, 100, 796, 360);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 		DecimalFormat decimal = new DecimalFormat("0.00000");
 		DecimalFormat decimal7Casas = new DecimalFormat("0.0000000");
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
-		tabbedPane.setBounds(0, 0, 780, 291);
+		tabbedPane.setBounds(0, 0, 780, 311);
 		frame.getContentPane().add(tabbedPane);
 		
 		JPanel panel = new JPanel();
@@ -185,6 +208,191 @@ public class Resultados {
 		textFieldKcSup.setColumns(10);
 		textFieldKcSup.setText(decimal.format(viga.getRaioCSup()).toString());
 		textFieldKcSup.setEditable(false);
+		
+		JPanel panel_1 = new JPanel();
+		tabbedPane.addTab("Aço Ativo", null, panel_1, null);
+		panel_1.setLayout(null);
+		
+		JLabel lblDimetro = new JLabel("Di\u00E2metro:");
+		lblDimetro.setBounds(10, 11, 57, 14);
+		panel_1.add(lblDimetro);
+		
+		textFieldDiametro = new JTextField();
+		textFieldDiametro.setBounds(77, 8, 86, 20);
+		panel_1.add(textFieldDiametro);
+		textFieldDiametro.setColumns(10);
+		textFieldDiametro.setText(decimal.format(viga.getAcoArmaduraAtiva().getNominal()).toString());
+		textFieldDiametro.setEditable(false);
+		
+		JLabel lblrea_1 = new JLabel("\u00C1rea:");
+		lblrea_1.setBounds(10, 41, 46, 14);
+		panel_1.add(lblrea_1);
+		
+		textFieldArea_1 = new JTextField();
+		textFieldArea_1.setBounds(77, 38, 86, 20);
+		panel_1.add(textFieldArea_1);
+		textFieldArea_1.setColumns(10);
+		textFieldArea_1.setText(decimal7Casas.format(viga.getAcoArmaduraAtiva().getArea()).toString());
+		textFieldArea_1.setEditable(false);
+		
+		JLabel lblpi = new JLabel("\u03C3pi:");
+		lblpi.setBounds(262, 11, 46, 14);
+		panel_1.add(lblpi);
+		
+		textFieldOpi = new JTextField();
+		textFieldOpi.setBounds(320, 8, 86, 20);
+		panel_1.add(textFieldOpi);
+		textFieldOpi.setColumns(10);
+		textFieldOpi.setText(decimal.format(tensao).toString());
+		textFieldOpi.setEditable(false);
+		
+		JLabel lblNp = new JLabel("Np0:");
+		lblNp.setBounds(262, 41, 46, 14);
+		panel_1.add(lblNp);
+		
+		textFieldNp0 = new JTextField();
+		textFieldNp0.setBounds(320, 38, 86, 20);
+		panel_1.add(textFieldNp0);
+		textFieldNp0.setColumns(10);
+		textFieldNp0.setText(decimal.format(viga.getAcoArmaduraAtiva().getNp0()).toString());
+		textFieldNp0.setEditable(false);
+		
+		JLabel lblpi_1 = new JLabel("\u2206\u03B5pi:");
+		lblpi_1.setBounds(262, 76, 46, 14);
+		panel_1.add(lblpi_1);
+		
+		textFieldpreAlongamento = new JTextField();
+		textFieldpreAlongamento.setBounds(320, 73, 86, 20);
+		panel_1.add(textFieldpreAlongamento);
+		textFieldpreAlongamento.setColumns(10);
+		textFieldpreAlongamento.setText(decimal.format(viga.getAcoArmaduraAtiva().getPreAlongamento()).toString());
+		textFieldpreAlongamento.setEditable(false);
+		
+		JLabel lblEspaamento = new JLabel("Espa\u00E7amento");
+		lblEspaamento.setBounds(10, 66, 111, 29);
+		panel_1.add(lblEspaamento);
+		
+		JLabel lblVertical = new JLabel("Vertical:");
+		lblVertical.setBounds(10, 95, 46, 14);
+		panel_1.add(lblVertical);
+		
+		JLabel lblHorizontal = new JLabel("Horizontal:");
+		lblHorizontal.setBounds(10, 120, 57, 14);
+		panel_1.add(lblHorizontal);
+		
+		textFieldespMin = new JTextField();
+		textFieldespMin.setBounds(77, 92, 86, 20);
+		panel_1.add(textFieldespMin);
+		textFieldespMin.setColumns(10);
+		textFieldespMin.setText(decimal.format(viga.getAcoArmaduraAtiva().getEspMin()).toString());
+		textFieldespMin.setEditable(false);
+		
+		textFieldespMin2 = new JTextField();
+		textFieldespMin2.setBounds(77, 117, 86, 20);
+		panel_1.add(textFieldespMin2);
+		textFieldespMin2.setColumns(10);
+		textFieldespMin2.setText(decimal.format(viga.getAcoArmaduraAtiva().getEspMin()).toString());
+		textFieldespMin2.setEditable(false);
+		
+		JPanel panel_7 = new JPanel();
+		tabbedPane.addTab("Aço Passivo", null, panel_7, null);
+		panel_7.setLayout(null);
+		
+		JLabel lblDimetro_1 = new JLabel("Di\u00E2metro:");
+		lblDimetro_1.setBounds(10, 11, 80, 14);
+		panel_7.add(lblDimetro_1);
+		
+		JLabel lblAs = new JLabel("As:");
+		lblAs.setBounds(10, 36, 46, 14);
+		panel_7.add(lblAs);
+		
+		textFielddiametroBarra = new JTextField();
+		textFielddiametroBarra.setBounds(100, 8, 86, 20);
+		panel_7.add(textFielddiametroBarra);
+		textFielddiametroBarra.setColumns(10);
+		textFielddiametroBarra.setText(decimal.format(viga.getAcoArmaduraPassiva().getDiametroBarra()).toString());
+		textFielddiametroBarra.setEditable(false);
+		
+		textFieldarea = new JTextField();
+		textFieldarea.setBounds(100, 33, 86, 20);
+		panel_7.add(textFieldarea);
+		textFieldarea.setColumns(10);
+		textFieldarea.setText(decimal.format(viga.getAcoArmaduraPassiva().getArea()).toString());
+		textFieldarea.setEditable(false);
+		
+		JLabel lblEspaamento_1 = new JLabel("Espa\u00E7amento:");
+		lblEspaamento_1.setBounds(10, 66, 105, 14);
+		panel_7.add(lblEspaamento_1);
+		
+		JLabel lblVertical_1 = new JLabel("Vertical:");
+		lblVertical_1.setBounds(10, 88, 68, 14);
+		panel_7.add(lblVertical_1);
+		
+		JLabel lblHorizontal_1 = new JLabel("Horizontal:");
+		lblHorizontal_1.setBounds(10, 113, 80, 14);
+		panel_7.add(lblHorizontal_1);
+		
+		textFieldespVertical = new JTextField();
+		textFieldespVertical.setBounds(100, 85, 86, 20);
+		panel_7.add(textFieldespVertical);
+		textFieldespVertical.setColumns(10);
+		textFieldespVertical.setText(decimal.format(viga.getAcoArmaduraPassiva().getEspVertical()).toString());
+		textFieldespVertical.setEditable(false);
+		
+		textFieldespHorizontal = new JTextField();
+		textFieldespHorizontal.setBounds(100, 110, 86, 20);
+		panel_7.add(textFieldespHorizontal);
+		textFieldespHorizontal.setColumns(10);
+		textFieldespHorizontal.setText(decimal.format(viga.getAcoArmaduraPassiva().getEspHorizontal()).toString());
+		textFieldespHorizontal.setEditable(false);
+		
+		JLabel lblCategoria = new JLabel("Categoria:");
+		lblCategoria.setBounds(253, 11, 80, 14);
+		panel_7.add(lblCategoria);
+		
+		textFieldcategoria = new JTextField();
+		textFieldcategoria.setBounds(356, 8, 86, 20);
+		panel_7.add(textFieldcategoria);
+		textFieldcategoria.setColumns(10);
+		textFieldcategoria.setText(viga.getAcoArmaduraPassiva().getCategoria());
+		textFieldcategoria.setEditable(false);
+		
+		JPanel panel_2 = new JPanel();
+		tabbedPane.addTab("Ações", null, panel_2, null);
+		panel_2.setLayout(null);
+		
+		JLabel lblMsd = new JLabel("Msd:");
+		lblMsd.setBounds(10, 11, 46, 14);
+		panel_2.add(lblMsd);
+		
+		textFieldMsd = new JTextField();
+		textFieldMsd.setBounds(69, 8, 86, 20);
+		panel_2.add(textFieldMsd);
+		textFieldMsd.setColumns(10);
+		textFieldMsd.setText(decimal7Casas.format(viga.getmSD()).toString());
+		textFieldMsd.setEditable(false);
+		
+		JLabel lblMgi = new JLabel("Mgi:");
+		lblMgi.setBounds(10, 36, 46, 14);
+		panel_2.add(lblMgi);
+		
+		textFieldmGI = new JTextField();
+		textFieldmGI.setBounds(69, 33, 86, 20);
+		panel_2.add(textFieldmGI);
+		textFieldmGI.setColumns(10);
+		textFieldmGI.setText(decimal7Casas.format(viga.getmGI()).toString());
+		textFieldmGI.setEditable(false);
+		
+		JLabel lblMgig = new JLabel("Mgi -g1:");
+		lblMgig.setBounds(10, 61, 46, 14);
+		panel_2.add(lblMgig);
+		
+		textFieldMgiG1 = new JTextField();
+		textFieldMgiG1.setBounds(69, 58, 86, 20);
+		panel_2.add(textFieldMgiG1);
+		textFieldMgiG1.setColumns(10);
+		textFieldMgiG1.setText(decimal7Casas.format(viga.getmGiG1()).toString());
+		textFieldMgiG1.setEditable(false);
 		
 		JPanel panel_3 = new JPanel();
 		tabbedPane.addTab("Processo k6", null, panel_3, null);
@@ -299,6 +507,183 @@ public class Resultados {
 		textFieldforcaTracao.setColumns(10);
 		textFieldforcaTracao.setText(decimal.format(viga.getForcaTracao()).toString());
 		textFieldforcaTracao.setEditable(false);
+		
+		JPanel panel_8 = new JPanel();
+		tabbedPane.addTab("ELS - Vigas", null, panel_8, null);
+		panel_8.setLayout(null);
+		
+		JLabel lblMcf = new JLabel("MCF:");
+		lblMcf.setBounds(10, 11, 46, 14);
+		panel_8.add(lblMcf);
+		
+		JLabel lblMcqp = new JLabel("MCQP:");
+		lblMcqp.setBounds(10, 36, 46, 14);
+		panel_8.add(lblMcqp);
+		
+		textFieldmCF = new JTextField();
+		textFieldmCF.setBounds(66, 8, 86, 20);
+		panel_8.add(textFieldmCF);
+		textFieldmCF.setColumns(10);
+		textFieldmCF.setText(decimal.format(viga.getmCF()).toString());
+		textFieldmCF.setEditable(false);
+		
+		textFieldmCQP = new JTextField();
+		textFieldmCQP.setBounds(66, 36, 86, 20);
+		panel_8.add(textFieldmCQP);
+		textFieldmCQP.setColumns(10);
+		textFieldmCQP.setText(decimal.format(viga.getmCQP()).toString());
+		textFieldmCQP.setEditable(false);
+		
+		JLabel lblNp_1 = new JLabel("NP\u221E:");
+		lblNp_1.setBounds(10, 70, 46, 14);
+		panel_8.add(lblNp_1);
+		
+		textFieldnpinfinito = new JTextField();
+		textFieldnpinfinito.setBounds(66, 67, 86, 20);
+		panel_8.add(textFieldnpinfinito);
+		textFieldnpinfinito.setColumns(10);
+		textFieldnpinfinito.setText(decimal.format(viga.getNpinfinito()).toString());
+		textFieldnpinfinito.setEditable(false);
+		
+		JLabel lblFctkf = new JLabel("fctk,f:");
+		lblFctkf.setBounds(10, 158, 46, 14);
+		panel_8.add(lblFctkf);
+		
+		textFieldfctkf = new JTextField();
+		textFieldfctkf.setBounds(66, 155, 86, 20);
+		panel_8.add(textFieldfctkf);
+		textFieldfctkf.setColumns(10);
+		textFieldfctkf.setText(decimal.format(viga.getFctkf()).toString());
+		textFieldfctkf.setEditable(false);
+		
+		JLabel lblcinf = new JLabel("\u03C3c,inf:");
+		lblcinf.setBounds(10, 183, 46, 14);
+		panel_8.add(lblcinf);
+		
+		textFieldtensaoFibraInferiorCF = new JTextField();
+		textFieldtensaoFibraInferiorCF.setBounds(66, 180, 86, 20);
+		panel_8.add(textFieldtensaoFibraInferiorCF);
+		textFieldtensaoFibraInferiorCF.setColumns(10);
+		textFieldtensaoFibraInferiorCF.setText(decimal.format(viga.getTensaoFibraInferiorCF()).toString());
+		textFieldtensaoFibraInferiorCF.setEditable(false);
+		
+		
+		
+		JLabel labelResultado = new JLabel(resultado);
+		labelResultado.setBounds(10, 243, 238, 14);
+		panel_8.add(labelResultado);
+		
+		JLabel lblElsfCfFibra = new JLabel("ELS-F CF Fibra inferior:");
+		lblElsfCfFibra.setBounds(10, 117, 142, 14);
+		panel_8.add(lblElsfCfFibra);
+		
+		JLabel lblElsfFibraSuperior = new JLabel("ELS-F Fibra Superior:");
+		lblElsfFibraSuperior.setBounds(262, 11, 115, 14);
+		panel_8.add(lblElsfFibraSuperior);
+		
+		JPanel panel_9 = new JPanel();
+		tabbedPane.addTab("ELU - Protensão", null, panel_9, null);
+		panel_9.setLayout(null);
+		
+		JLabel lblTensesNasFibras = new JLabel("Tens\u00F5es nas fibras Superiores e Inferiores devido a protens\u00E3o:");
+		lblTensesNasFibras.setBounds(10, 11, 353, 14);
+		panel_9.add(lblTensesNasFibras);
+		
+		JLabel lblcsupNp = new JLabel("\u03C3c,sup,1,10 . Np0(0):");
+		lblcsupNp.setBounds(10, 36, 116, 14);
+		panel_9.add(lblcsupNp);
+		
+		textFieldtensaoFibraSupProt = new JTextField();
+		textFieldtensaoFibraSupProt.setBounds(198, 33, 86, 20);
+		panel_9.add(textFieldtensaoFibraSupProt);
+		textFieldtensaoFibraSupProt.setColumns(10);
+		textFieldtensaoFibraSupProt.setText(decimal.format(viga.getTensaoFibraSupProt()).toString());
+		textFieldtensaoFibraSupProt.setEditable(false);
+		
+		JLabel lblcinfNp = new JLabel("\u03C3c,inf,1,10 . Np0(0):");
+		lblcinfNp.setBounds(10, 69, 116, 14);
+		panel_9.add(lblcinfNp);
+		
+		textFieldtensaoFibraInfProt = new JTextField();
+		textFieldtensaoFibraInfProt.setBounds(198, 66, 86, 20);
+		panel_9.add(textFieldtensaoFibraInfProt);
+		textFieldtensaoFibraInfProt.setColumns(10);
+		textFieldtensaoFibraInfProt.setText(decimal.format(viga.getTensaoFibraInfProt()).toString());
+		textFieldtensaoFibraInfProt.setEditable(false);
+		
+		JLabel lblTensesNasFibras_1 = new JLabel(" Tens\u00F5es nas fibras superiores e inferiores devido ao Mg1:");
+		lblTensesNasFibras_1.setBounds(10, 107, 336, 14);
+		panel_9.add(lblTensesNasFibras_1);
+		
+		JLabel lblcsupmg = new JLabel("\u03C3c,sup,Mg1:");
+		lblcsupmg.setBounds(10, 135, 69, 14);
+		panel_9.add(lblcsupmg);
+		
+		textFieldtensaoFibraSupPP = new JTextField();
+		textFieldtensaoFibraSupPP.setBounds(198, 132, 86, 20);
+		panel_9.add(textFieldtensaoFibraSupPP);
+		textFieldtensaoFibraSupPP.setColumns(10);
+		textFieldtensaoFibraSupPP.setText(decimal.format(viga.getTensaoFibraSupPP().toString()));
+		textFieldtensaoFibraSupPP.setEditable(false);
+		
+		JLabel lblcinfmg = new JLabel("\u03C3c,inf,Mg1:");
+		lblcinfmg.setBounds(10, 166, 86, 14);
+		panel_9.add(lblcinfmg);
+		
+		textFieldtensaoFibraInfPP = new JTextField();
+		textFieldtensaoFibraInfPP.setBounds(198, 163, 86, 20);
+		panel_9.add(textFieldtensaoFibraInfPP);
+		textFieldtensaoFibraInfPP.setColumns(10);
+		textFieldtensaoFibraInfPP.setText(decimal.format(viga.getTensaoFibraInfPP().toString()));
+		textFieldtensaoFibraInfPP.setEditable(false);
+		
+		JLabel label_1 = new JLabel("\u03B21:");
+		label_1.setBounds(407, 11, 46, 14);
+		panel_9.add(label_1);
+		
+		textFieldbeta1 = new JTextField();
+		textFieldbeta1.setBounds(463, 8, 86, 20);
+		panel_9.add(textFieldbeta1);
+		textFieldbeta1.setColumns(10);
+		textFieldbeta1.setText(decimal.format(viga.getBeta1().toString()));
+		textFieldbeta1.setEditable(false);
+		
+		JLabel lblFckj = new JLabel("FckJ:");
+		lblFckj.setBounds(407, 36, 46, 14);
+		panel_9.add(lblFckj);
+		
+		textFieldfckJ = new JTextField();
+		textFieldfckJ.setBounds(463, 33, 86, 20);
+		panel_9.add(textFieldfckJ);
+		textFieldfckJ.setColumns(10);
+		textFieldfckJ.setText(decimal.format(viga.getFckJ().toString()));
+		textFieldfckJ.setEditable(false);
+		
+		JLabel lblNmeroMximoDe = new JLabel("N\u00FAmero m\u00E1ximo de cordoalhas:");
+		lblNmeroMximoDe.setBounds(407, 69, 172, 14);
+		panel_9.add(lblNmeroMximoDe);
+		
+		JLabel lblNsup = new JLabel("Nsup:");
+		lblNsup.setBounds(407, 94, 46, 14);
+		panel_9.add(lblNsup);
+		
+		textFieldnSup = new JTextField();
+		textFieldnSup.setBounds(463, 94, 86, 20);
+		panel_9.add(textFieldnSup);
+		textFieldnSup.setColumns(10);
+		textFieldnSup.setText(decimal.format(viga.getnSup().toString()));
+		textFieldnSup.setEditable(false);
+		
+		JLabel lblNinf = new JLabel("Ninf:");
+		lblNinf.setBounds(407, 128, 46, 14);
+		panel_9.add(lblNinf);
+		
+		textFieldnInf = new JTextField();
+		textFieldnInf.setBounds(463, 125, 86, 20);
+		panel_9.add(textFieldnInf);
+		textFieldnInf.setColumns(10);
+		textFieldnInf.setText(decimal.format(viga.getnInf().toString()));
+		textFieldnInf.setEditable(false);
 		
 		JPanel panel_4 = new JPanel();
 		tabbedPane.addTab("Perdas Iniciais", null, panel_4, null);
@@ -499,255 +884,154 @@ public class Resultados {
 		tabbedPane.addTab("Perdas Progressivas", null, panel_6, null);
 		panel_6.setLayout(null);
 		
-		JPanel panel_1 = new JPanel();
-		tabbedPane.addTab("Aço Ativo", null, panel_1, null);
-		panel_1.setLayout(null);
+		JLabel lbla = new JLabel("\u03C6a:");
+		lbla.setBounds(10, 11, 46, 14);
+		panel_6.add(lbla);
 		
-		JLabel lblDimetro = new JLabel("Di\u00E2metro:");
-		lblDimetro.setBounds(10, 11, 57, 14);
-		panel_1.add(lblDimetro);
+		textFieldfluenciaRapida = new JTextField();
+		textFieldfluenciaRapida.setBounds(66, 8, 86, 20);
+		panel_6.add(textFieldfluenciaRapida);
+		textFieldfluenciaRapida.setColumns(10);
+		textFieldfluenciaRapida.setText(decimal.format(viga.getFluenciaRapida().toString()));
+		textFieldfluenciaRapida.setEditable(false);
 		
-		textFieldDiametro = new JTextField();
-		textFieldDiametro.setBounds(77, 8, 86, 20);
-		panel_1.add(textFieldDiametro);
-		textFieldDiametro.setColumns(10);
-		textFieldDiametro.setText(decimal.format(viga.getAcoArmaduraAtiva().getNominal()).toString());
-		textFieldDiametro.setEditable(false);
+		JLabel lblc = new JLabel("\u03C61c:");
+		lblc.setBounds(10, 36, 46, 14);
+		panel_6.add(lblc);
 		
-		JLabel lblrea_1 = new JLabel("\u00C1rea:");
-		lblrea_1.setBounds(10, 41, 46, 14);
-		panel_1.add(lblrea_1);
+		textFieldphi1C = new JTextField();
+		textFieldphi1C.setBounds(66, 39, 86, 20);
+		panel_6.add(textFieldphi1C);
+		textFieldphi1C.setColumns(10);
+		textFieldphi1C.setText(decimal.format(viga.getPhi1C().toString()));
+		textFieldphi1C.setEditable(false);
 		
-		textFieldArea_1 = new JTextField();
-		textFieldArea_1.setBounds(77, 38, 86, 20);
-		panel_1.add(textFieldArea_1);
-		textFieldArea_1.setColumns(10);
-		textFieldArea_1.setText(decimal7Casas.format(viga.getAcoArmaduraAtiva().getArea()).toString());
-		textFieldArea_1.setEditable(false);
+		JLabel lblc_1 = new JLabel("\u03C62c:");
+		lblc_1.setBounds(10, 69, 46, 14);
+		panel_6.add(lblc_1);
 		
-		JLabel lblpi = new JLabel("\u03C3pi:");
-		lblpi.setBounds(262, 11, 46, 14);
-		panel_1.add(lblpi);
+		textFieldphi2C = new JTextField();
+		textFieldphi2C.setBounds(66, 70, 86, 20);
+		panel_6.add(textFieldphi2C);
+		textFieldphi2C.setColumns(10);
+		textFieldphi2C.setText(decimal.format(viga.getPhi2C().toString()));
+		textFieldphi2C.setEditable(false);
 		
-		textFieldOpi = new JTextField();
-		textFieldOpi.setBounds(320, 8, 86, 20);
-		panel_1.add(textFieldOpi);
-		textFieldOpi.setColumns(10);
+		JLabel lblf = new JLabel("\u03C6f\u221E:");
+		lblf.setBounds(10, 104, 46, 14);
+		panel_6.add(lblf);
+		
+		textFieldphiInfinito = new JTextField();
+		textFieldphiInfinito.setBounds(66, 101, 86, 20);
+		panel_6.add(textFieldphiInfinito);
+		textFieldphiInfinito.setColumns(10);
+		textFieldphiInfinito.setText(decimal.format(viga.getPhiInfinito()));
+		textFieldphiInfinito.setEditable(false);
+		
+		JLabel lblt = new JLabel("\u03C6(\u221E,t0):");
+		lblt.setBounds(10, 135, 46, 14);
+		panel_6.add(lblt);
+		
+		textFieldcoeficienteFluencia = new JTextField();
+		textFieldcoeficienteFluencia.setBounds(66, 132, 86, 20);
+		panel_6.add(textFieldcoeficienteFluencia);
+		textFieldcoeficienteFluencia.setColumns(10);
+		
+		JLabel lblcmgy = new JLabel("\u03C3c,Mg1Y:");
+		lblcmgy.setBounds(263, 11, 46, 14);
+		panel_6.add(lblcmgy);
+		
+		textFieldmG1Y = new JTextField();
+		textFieldmG1Y.setBounds(346, 8, 86, 20);
+		panel_6.add(textFieldmG1Y);
+		textFieldmG1Y.setColumns(10);
+		
+		JLabel lblcmgigy = new JLabel("\u03C3c,M(gi-g1),Y:");
+		lblcmgigy.setBounds(263, 42, 77, 14);
+		panel_6.add(lblcmgigy);
+		
+		textFieldmGiG1Y = new JTextField();
+		textFieldmGiG1Y.setBounds(346, 39, 86, 20);
+		panel_6.add(textFieldmGiG1Y);
+		textFieldmGiG1Y.setColumns(10);
+		
+		JLabel lblcpy = new JLabel("\u03C3c,P0,y:");
+		lblcpy.setBounds(263, 73, 46, 14);
+		panel_6.add(lblcpy);
+		
+		textFieldtensaoNormalProtensao = new JTextField();
+		textFieldtensaoNormalProtensao.setBounds(346, 70, 86, 20);
+		panel_6.add(textFieldtensaoNormalProtensao);
+		textFieldtensaoNormalProtensao.setColumns(10);
+		
+		JLabel lblp_2 = new JLabel("\u03C3p0:");
+		lblp_2.setBounds(263, 104, 46, 14);
+		panel_6.add(lblp_2);
+		
+		textFieldtensaoProntensaoAco = new JTextField();
+		textFieldtensaoProntensaoAco.setBounds(346, 101, 86, 20);
+		panel_6.add(textFieldtensaoProntensaoAco);
+		textFieldtensaoProntensaoAco.setColumns(10);
+		
+		JLabel lblpcst = new JLabel("\u2206\u03C3P,c+s(\u221E,t0):");
+		lblpcst.setBounds(263, 135, 77, 14);
+		panel_6.add(lblpcst);
+		
+		textFieldperdaRetracaoFluencia = new JTextField();
+		textFieldperdaRetracaoFluencia.setBounds(346, 132, 86, 20);
+		panel_6.add(textFieldperdaRetracaoFluencia);
+		textFieldperdaRetracaoFluencia.setColumns(10);
+		
+		JLabel lblpcsx = new JLabel("\u2206P\u221E,c+s(x):");
+		lblpcsx.setBounds(263, 170, 77, 14);
+		panel_6.add(lblpcsx);
+		
+		textFieldvalorPerdaRetracaoFluencia = new JTextField();
+		textFieldvalorPerdaRetracaoFluencia.setBounds(346, 167, 86, 20);
+		panel_6.add(textFieldvalorPerdaRetracaoFluencia);
+		textFieldvalorPerdaRetracaoFluencia.setColumns(10);
+		
+		JLabel lblprt = new JLabel("\u2206\u03C3pr(\u221E,t0):");
+		lblprt.setBounds(263, 205, 77, 14);
+		panel_6.add(lblprt);
+		
+		textFieldrelaxacaoPura = new JTextField();
+		textFieldrelaxacaoPura.setBounds(346, 202, 86, 20);
+		panel_6.add(textFieldrelaxacaoPura);
+		textFieldrelaxacaoPura.setColumns(10);
+		
+		JLabel lblprtrel = new JLabel("\u2206\u03C3pr(\u221E,t0),rel:");
+		lblprtrel.setBounds(263, 238, 77, 14);
+		panel_6.add(lblprtrel);
+		
+		textFieldrelaxacaoRelativa = new JTextField();
+		textFieldrelaxacaoRelativa.setBounds(346, 235, 86, 20);
+		panel_6.add(textFieldrelaxacaoRelativa);
+		textFieldrelaxacaoRelativa.setColumns(10);
+		
+		JLabel lblprx = new JLabel("\u2206P\u221E,r(x):");
+		lblprx.setBounds(542, 11, 58, 14);
+		panel_6.add(lblprx);
+		
+		textFieldperdaProtensaoRelaxacaoAco = new JTextField();
+		textFieldperdaProtensaoRelaxacaoAco.setBounds(626, 8, 86, 20);
+		panel_6.add(textFieldperdaProtensaoRelaxacaoAco);
+		textFieldperdaProtensaoRelaxacaoAco.setColumns(10);
+		
+		JLabel lblPx_2 = new JLabel("P\u221E(x):");
+		lblPx_2.setBounds(540, 42, 46, 14);
+		panel_6.add(lblPx_2);
+		
+		textFieldforcaFinal3 = new JTextField();
+		textFieldforcaFinal3.setBounds(626, 39, 86, 20);
+		panel_6.add(textFieldforcaFinal3);
+		textFieldforcaFinal3.setColumns(10);
 		Double tensao;
 		if(viga.getAcoArmaduraAtiva().getTensaoFptk() < viga.getAcoArmaduraAtiva().getTensaoFpyk()){
 			tensao = viga.getAcoArmaduraAtiva().getTensaoFptk();
 		} else {
 			tensao = viga.getAcoArmaduraAtiva().getTensaoFpyk();
 		}
-		textFieldOpi.setText(decimal.format(tensao).toString());
-		textFieldOpi.setEditable(false);
-		
-		JLabel lblNp = new JLabel("Np0:");
-		lblNp.setBounds(262, 41, 46, 14);
-		panel_1.add(lblNp);
-		
-		textFieldNp0 = new JTextField();
-		textFieldNp0.setBounds(320, 38, 86, 20);
-		panel_1.add(textFieldNp0);
-		textFieldNp0.setColumns(10);
-		textFieldNp0.setText(decimal.format(viga.getAcoArmaduraAtiva().getNp0()).toString());
-		textFieldNp0.setEditable(false);
-		
-		JLabel lblpi_1 = new JLabel("\u2206\u03B5pi:");
-		lblpi_1.setBounds(262, 76, 46, 14);
-		panel_1.add(lblpi_1);
-		
-		textFieldpreAlongamento = new JTextField();
-		textFieldpreAlongamento.setBounds(320, 73, 86, 20);
-		panel_1.add(textFieldpreAlongamento);
-		textFieldpreAlongamento.setColumns(10);
-		textFieldpreAlongamento.setText(decimal.format(viga.getAcoArmaduraAtiva().getPreAlongamento()).toString());
-		textFieldpreAlongamento.setEditable(false);
-		
-		JLabel lblEspaamento = new JLabel("Espa\u00E7amento");
-		lblEspaamento.setBounds(10, 66, 111, 29);
-		panel_1.add(lblEspaamento);
-		
-		JLabel lblVertical = new JLabel("Vertical:");
-		lblVertical.setBounds(10, 95, 46, 14);
-		panel_1.add(lblVertical);
-		
-		JLabel lblHorizontal = new JLabel("Horizontal:");
-		lblHorizontal.setBounds(10, 120, 57, 14);
-		panel_1.add(lblHorizontal);
-		
-		textFieldespMin = new JTextField();
-		textFieldespMin.setBounds(77, 92, 86, 20);
-		panel_1.add(textFieldespMin);
-		textFieldespMin.setColumns(10);
-		textFieldespMin.setText(decimal.format(viga.getAcoArmaduraAtiva().getEspMin()).toString());
-		textFieldespMin.setEditable(false);
-		
-		textFieldespMin2 = new JTextField();
-		textFieldespMin2.setBounds(77, 117, 86, 20);
-		panel_1.add(textFieldespMin2);
-		textFieldespMin2.setColumns(10);
-		textFieldespMin2.setText(decimal.format(viga.getAcoArmaduraAtiva().getEspMin()).toString());
-		textFieldespMin2.setEditable(false);
-		
-		JPanel panel_7 = new JPanel();
-		tabbedPane.addTab("Aço Passivo", null, panel_7, null);
-		panel_7.setLayout(null);
-		
-		JLabel lblDimetro_1 = new JLabel("Di\u00E2metro:");
-		lblDimetro_1.setBounds(10, 11, 80, 14);
-		panel_7.add(lblDimetro_1);
-		
-		JLabel lblAs = new JLabel("As:");
-		lblAs.setBounds(10, 36, 46, 14);
-		panel_7.add(lblAs);
-		
-		textFielddiametroBarra = new JTextField();
-		textFielddiametroBarra.setBounds(100, 8, 86, 20);
-		panel_7.add(textFielddiametroBarra);
-		textFielddiametroBarra.setColumns(10);
-		textFielddiametroBarra.setText(decimal.format(viga.getAcoArmaduraPassiva().getDiametroBarra()).toString());
-		textFielddiametroBarra.setEditable(false);
-		
-		textFieldarea = new JTextField();
-		textFieldarea.setBounds(100, 33, 86, 20);
-		panel_7.add(textFieldarea);
-		textFieldarea.setColumns(10);
-		textFieldarea.setText(decimal.format(viga.getAcoArmaduraPassiva().getArea()).toString());
-		textFieldarea.setEditable(false);
-		
-		JLabel lblEspaamento_1 = new JLabel("Espa\u00E7amento:");
-		lblEspaamento_1.setBounds(10, 66, 105, 14);
-		panel_7.add(lblEspaamento_1);
-		
-		JLabel lblVertical_1 = new JLabel("Vertical:");
-		lblVertical_1.setBounds(10, 88, 68, 14);
-		panel_7.add(lblVertical_1);
-		
-		JLabel lblHorizontal_1 = new JLabel("Horizontal:");
-		lblHorizontal_1.setBounds(10, 113, 80, 14);
-		panel_7.add(lblHorizontal_1);
-		
-		textFieldespVertical = new JTextField();
-		textFieldespVertical.setBounds(100, 85, 86, 20);
-		panel_7.add(textFieldespVertical);
-		textFieldespVertical.setColumns(10);
-		textFieldespVertical.setText(decimal.format(viga.getAcoArmaduraPassiva().getEspVertical()).toString());
-		textFieldespVertical.setEditable(false);
-		
-		textFieldespHorizontal = new JTextField();
-		textFieldespHorizontal.setBounds(100, 110, 86, 20);
-		panel_7.add(textFieldespHorizontal);
-		textFieldespHorizontal.setColumns(10);
-		textFieldespHorizontal.setText(decimal.format(viga.getAcoArmaduraPassiva().getEspHorizontal()).toString());
-		textFieldespHorizontal.setEditable(false);
-		
-		JLabel lblCategoria = new JLabel("Categoria:");
-		lblCategoria.setBounds(253, 11, 80, 14);
-		panel_7.add(lblCategoria);
-		
-		textFieldcategoria = new JTextField();
-		textFieldcategoria.setBounds(356, 8, 86, 20);
-		panel_7.add(textFieldcategoria);
-		textFieldcategoria.setColumns(10);
-		textFieldcategoria.setText(viga.getAcoArmaduraPassiva().getCategoria());
-		textFieldcategoria.setEditable(false);
-		
-		JPanel panel_2 = new JPanel();
-		tabbedPane.addTab("Ações", null, panel_2, null);
-		panel_2.setLayout(null);
-		
-		JLabel lblMsd = new JLabel("Msd:");
-		lblMsd.setBounds(10, 11, 46, 14);
-		panel_2.add(lblMsd);
-		
-		textFieldMsd = new JTextField();
-		textFieldMsd.setBounds(69, 8, 86, 20);
-		panel_2.add(textFieldMsd);
-		textFieldMsd.setColumns(10);
-		textFieldMsd.setText(decimal7Casas.format(viga.getmSD()).toString());
-		textFieldMsd.setEditable(false);
-		
-		JLabel lblMgi = new JLabel("Mgi:");
-		lblMgi.setBounds(10, 36, 46, 14);
-		panel_2.add(lblMgi);
-		
-		textFieldmGI = new JTextField();
-		textFieldmGI.setBounds(69, 33, 86, 20);
-		panel_2.add(textFieldmGI);
-		textFieldmGI.setColumns(10);
-		textFieldmGI.setText(decimal7Casas.format(viga.getmGI()).toString());
-		textFieldmGI.setEditable(false);
-		
-		JLabel lblMgig = new JLabel("Mgi -g1:");
-		lblMgig.setBounds(10, 61, 46, 14);
-		panel_2.add(lblMgig);
-		
-		textFieldMgiG1 = new JTextField();
-		textFieldMgiG1.setBounds(69, 58, 86, 20);
-		panel_2.add(textFieldMgiG1);
-		textFieldMgiG1.setColumns(10);
-		textFieldMgiG1.setText(decimal7Casas.format(viga.getmGiG1()).toString());
-		textFieldMgiG1.setEditable(false);
-		
-		JPanel panel_8 = new JPanel();
-		tabbedPane.addTab("ELS - Vigas", null, panel_8, null);
-		panel_8.setLayout(null);
-		
-		JLabel lblMcf = new JLabel("MCF:");
-		lblMcf.setBounds(10, 11, 46, 14);
-		panel_8.add(lblMcf);
-		
-		JLabel lblMcqp = new JLabel("MCQP:");
-		lblMcqp.setBounds(10, 36, 46, 14);
-		panel_8.add(lblMcqp);
-		
-		textFieldmCF = new JTextField();
-		textFieldmCF.setBounds(66, 8, 86, 20);
-		panel_8.add(textFieldmCF);
-		textFieldmCF.setColumns(10);
-		textFieldmCF.setText(decimal.format(viga.getmCF()).toString());
-		textFieldmCF.setEditable(false);
-		
-		textFieldmCQP = new JTextField();
-		textFieldmCQP.setBounds(66, 36, 86, 20);
-		panel_8.add(textFieldmCQP);
-		textFieldmCQP.setColumns(10);
-		textFieldmCQP.setText(decimal.format(viga.getmCQP()).toString());
-		textFieldmCQP.setEditable(false);
-		
-		JLabel lblNp_1 = new JLabel("NP\u221E:");
-		lblNp_1.setBounds(10, 70, 46, 14);
-		panel_8.add(lblNp_1);
-		
-		textFieldnpinfinito = new JTextField();
-		textFieldnpinfinito.setBounds(66, 67, 86, 20);
-		panel_8.add(textFieldnpinfinito);
-		textFieldnpinfinito.setColumns(10);
-		textFieldnpinfinito.setText(decimal.format(viga.getNpinfinito()).toString());
-		textFieldnpinfinito.setEditable(false);
-		
-		JLabel lblFctkf = new JLabel("fctk,f:");
-		lblFctkf.setBounds(10, 105, 46, 14);
-		panel_8.add(lblFctkf);
-		
-		textFieldfctkf = new JTextField();
-		textFieldfctkf.setBounds(66, 102, 86, 20);
-		panel_8.add(textFieldfctkf);
-		textFieldfctkf.setColumns(10);
-		textFieldfctkf.setText(decimal.format(viga.getFctkf()).toString());
-		textFieldfctkf.setEditable(false);
-		
-		JLabel lblcinf = new JLabel("\u03C3c,inf:");
-		lblcinf.setBounds(10, 130, 46, 14);
-		panel_8.add(lblcinf);
-		
-		textFieldtensaoFibraInferiorCF = new JTextField();
-		textFieldtensaoFibraInferiorCF.setBounds(66, 127, 86, 20);
-		panel_8.add(textFieldtensaoFibraInferiorCF);
-		textFieldtensaoFibraInferiorCF.setColumns(10);
-		textFieldtensaoFibraInferiorCF.setText(decimal.format(viga.getTensaoFibraInferiorCF()).toString());
-		textFieldtensaoFibraInferiorCF.setEditable(false);
 		
 		String resultado = "";
 		
@@ -756,12 +1040,6 @@ public class Resultados {
 		} else {
 			resultado = "A fibra foi fissurada!";
 		}
-			
-			
-		
-		JLabel labelResultado = new JLabel(resultado);
-		labelResultado.setBounds(72, 188, 238, 14);
-		panel_8.add(labelResultado);
 		
 		frame.setVisible(true);
 	}
