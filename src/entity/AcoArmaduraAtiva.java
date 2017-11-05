@@ -8,18 +8,18 @@ public class AcoArmaduraAtiva {
 		super();
 		this.numerosFrios = numerosFrios;
 		//Diametro da barra
-		this.nominal = nominal;
+		this.nominal = nominal; //m
 		this.area = area;
 		this.massa = massa;
 		this.fptk = fptk;
 		this.fpyk = fpyk;
 		this.dMax = 1.9;
-		this.pondPretracao = 1.0;
+		this.pondPretracao = 1.1;
 //		this.relaxacao = relaxacao;
 		this.tensaoFptk = 0.77 * fptk;
-		this.tensaoFpyk = 0.9 * fpyk; //definido apenas como Relaxacao Normal
-		this.cobrimentoMinimo = 35; //mm
-		this.elasticidadeacoativo = 200 * Math.pow(10, 3); //verificar unidade
+		this.tensaoFpyk = 0.85 * fpyk; //definido apenas como Relaxacao Baixa
+		this.cobrimentoMinimo = 0.035; //m
+		this.elasticidadeacoativo = 200 * Math.pow(10, 6); 
 		this.quantidadeCordoalhas = quantidadeCordoalhas;
 		
 		
@@ -27,17 +27,17 @@ public class AcoArmaduraAtiva {
 		
 		//Pega o menor valor gereado de tensão para multiplicar com a área
 		if (tensaoFptk > tensaoFpyk){ 
-			this.np0 = tensaoFpyk * area;
+			this.np0 = (tensaoFpyk * area)*1000; //verificar unidade, mult por 1000 
 		} else {
-			this.np0 = tensaoFptk * area;
+			this.np0 = (tensaoFptk * area)*1000; //verificar unidade, mult por 1000
 		}
 		
 		//descobrir deformação para o calculo da tensão
 		
 //		this.tensao = 200 * Math.pow(10, 9)  ;
 	
-		this.pd = np0 * 0.9;
-		this.preAlongamento = ((pd * (1-0.25))/(200 * Math.pow(10, 9)) * area ) * 1000;
+		this.pd = np0 * 0.9; 
+		this.preAlongamento = ((pd * 0.75)/(elasticidadeacoativo * area )) * 1000; //resultado em %
 		if (2*(nominal*10) > 1.2*(dMax*10) && 2*(nominal*10) > 2){
 			this.espMin = 2*(nominal*10);
 		}
@@ -99,7 +99,7 @@ public class AcoArmaduraAtiva {
 		//Diâmetro da brita (à verificar)
 		private Double dMax;
 		
-		private Integer cobrimentoMinimo;
+		private Double cobrimentoMinimo;
 		
 		//COMEÇANDO AQUI
 		private Double elasticidadeacoativo;
@@ -241,11 +241,11 @@ public class AcoArmaduraAtiva {
 			this.dMax = dMax;
 		}
 
-		public Integer getCobrimentoMinimo() {
+		public Double getCobrimentoMinimo() {
 			return cobrimentoMinimo;
 		}
 
-		public void setCobrimentoMinimo(Integer cobrimentoMinimo) {
+		public void setCobrimentoMinimo(Double cobrimentoMinimo) {
 			this.cobrimentoMinimo = cobrimentoMinimo;
 		}
 

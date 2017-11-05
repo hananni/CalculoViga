@@ -244,43 +244,43 @@ public class CalculoViga extends JFrame {
 				Double nominal, area, massa;
 				if(comboBoxAcoArmaduraAtiva.getSelectedIndex() == 0){
 					numFios = 3;
-					nominal = 6.5;
-					area = 0.218;
+					nominal = 0.0065; //m
+					area = 0.0000218; //m²
 					massa = 0.171;
 				} else if (comboBoxAcoArmaduraAtiva.getSelectedIndex() == 1){
 					numFios = 3;
-					nominal = 7.6;
-					area = 0.303;
+					nominal = 0.0076;
+					area = 0.0000303;
 					massa = 0.238;
 				} else if (comboBoxAcoArmaduraAtiva.getSelectedIndex() == 2){
 					numFios = 3;
-					nominal = 8.8;
-					area = 0.387;
+					nominal = 0.0088;
+					area = 0.0000387;
 					massa = 0.304;
 				} else if (comboBoxAcoArmaduraAtiva.getSelectedIndex() == 3){
 					numFios = 3;
-					nominal = 9.6;
-					area = 0.466;
+					nominal = 0.0096;
+					area = 0.0000466;
 					massa = 0.366;
 				} else if (comboBoxAcoArmaduraAtiva.getSelectedIndex() == 4){
 					numFios = 3;
-					nominal = 11.1;
-					area = 0.662;
+					nominal = 0.011;
+					area = 0.0000662;
 					massa = 0.52;
 				} else if (comboBoxAcoArmaduraAtiva.getSelectedIndex() == 5){
 					numFios = 7;
-					nominal = 9.5;
-					area = 0.562;
+					nominal = 0.0095;
+					area = 0.0000562;
 					massa = 0.441;
 				} else if (comboBoxAcoArmaduraAtiva.getSelectedIndex() == 6){
 					numFios = 7;
-					nominal = 12.7;
-					area = 1.009;
+					nominal = 0.0127;
+					area = 0.0001009;
 					massa = 0.792;
 				}  else {
 					numFios = 7;
-					nominal = 15.2;
-					area = 1.434;
+					nominal = 0.0152;
+					area = 0.0001434;
 					massa = 1.126;
 				}
 				
@@ -294,32 +294,32 @@ public class CalculoViga extends JFrame {
 				Integer fyk;
 				
 				if(comboBoxArmaduraPassiva.getSelectedIndex() == 0){
-					diametroBarra = 6.3;
-					areaPassiva = 31.2;
+					diametroBarra = 0.0063; //m
+					areaPassiva = 0.312; //cm²
 				} else if(comboBoxArmaduraPassiva.getSelectedIndex() == 1){
-					diametroBarra = 8.0;
-					areaPassiva = 50.3;
+					diametroBarra = 0.008;
+					areaPassiva = 0.503;
 				} else if(comboBoxArmaduraPassiva.getSelectedIndex() == 2){
-					diametroBarra = 10.0;
-					areaPassiva = 78.5;
+					diametroBarra = 0.01;
+					areaPassiva = 0.785;
 				} else if(comboBoxArmaduraPassiva.getSelectedIndex() == 3){
-					diametroBarra = 12.5;
-					areaPassiva = 122.7;
+					diametroBarra = 0.0125;
+					areaPassiva = 1.227;
 				} else if(comboBoxArmaduraPassiva.getSelectedIndex() == 4){
-					diametroBarra = 16.0;
-					areaPassiva = 201.1;
+					diametroBarra = 0.016;
+					areaPassiva = 2.011;
 				} else if(comboBoxArmaduraPassiva.getSelectedIndex() == 5){
-					diametroBarra = 20.0;
-					areaPassiva = 314.2;
+					diametroBarra = 0.02;
+					areaPassiva = 3.142;
 				} else if(comboBoxArmaduraPassiva.getSelectedIndex() == 6){
-					diametroBarra = 22.0;
-					areaPassiva = 380.1;
+					diametroBarra = 0.022;
+					areaPassiva = 3.801;
 				} else if(comboBoxArmaduraPassiva.getSelectedIndex() == 7){
-					diametroBarra = 25.0;
-					areaPassiva = 490.9;
+					diametroBarra = 0.025;
+					areaPassiva = 4.909;
 				} else {
-					diametroBarra = 32.0;
-					areaPassiva = 804.2;
+					diametroBarra = 0.032;
+					areaPassiva = 8.042;
 				}
 				
 				if(comboBoxCategoria.getSelectedIndex() == 0 ){
@@ -380,8 +380,8 @@ public class CalculoViga extends JFrame {
 					e1.printStackTrace();
 				}
 					
-				System.out.println(viga);
-
+				Resultados result = new Resultados(viga);
+				
 				
 				
 			}

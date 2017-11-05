@@ -14,10 +14,10 @@ public class Viga {
 			AcoArmaduraPassiva acoArmaduraPassiva, String classeconcreto, Integer fck, Double umidade, Double gamaEndurecimento,
 			Double mPermanentes, Double mAcidentais) throws Exception {
 		super();
-		this.base = i;
-		this.altura = j;
+		this.base = i; 
+		this.altura = j; 
 //		this.hipotese = hipotese;
-		this.l = l;
+		this.l = l; 
 		this.mPermanentes = mPermanentes; //entrar com esses dados
 		this.mAcidentais = mAcidentais; //entrar com esses dados
 		this.area = base * altura;
@@ -42,37 +42,38 @@ public class Viga {
 		// checar segundo parâmetro.
 		this.concreto = new Concreto(area, classeconcreto, fck);
 		this.mG1 = concreto.getqG1() * Math.pow (l,2)/8;
-		this.mGI = mPermanentes + mAcidentais;
-		this.mGiG1 = mG1 - mGI;
+		this.mGI = mG1 + mPermanentes + mAcidentais; 
+		this.mGiG1 = mGI - mG1;  
 		this.acoArmaduraAtiva = acoArmaduraAtiva;
 		
 		
 		//Contas para processo K6
-		this.mSD = 1.4*mPermanentes + 1.3*mAcidentais;
-
+		//MSD DE KNm PARA MNm
+		//this.mSD = (1.4*mPermanentes + 1.3*mAcidentais)/1000; //ALTERAR MSD
+		this.mSD = 0.16990;
 
 		this.y0 = acoArmaduraAtiva.getCobrimentoMinimo() + (acoArmaduraAtiva.getNominal()/2) ;
 		this.dP = altura - this.y0;
-		this.k6 = (base - Math.pow(dP, 2))/this.mSD;
+		this.k6 = (base * (Math.pow(dP, 2)))/(this.mSD);
 		
-		this.betaX = Double.parseDouble(JOptionPane.showInputDialog("Valor de k6: "+ k6 + "\nDigite o Valor de BetaX: "));
-		this.betaZ = Double.parseDouble(JOptionPane.showInputDialog("Digite o Valor de BetaZ: "));
-		this.epsilonCD = Double.parseDouble(JOptionPane.showInputDialog("Digite o Valor de EpsilonCD: "));
-		this.deltaEpsilonPD = Double.parseDouble(JOptionPane.showInputDialog("Digite o Valor de DeltaEpsilonPD: "));
+		this.betaX = Double.parseDouble(JOptionPane.showInputDialog("Valor de k6: "+ k6 + "\nDigite o Valor de BetaX: ")); 
+		this.betaZ = Double.parseDouble(JOptionPane.showInputDialog("Digite o Valor de BetaZ: ")); 
+		this.epsilonCD = Double.parseDouble(JOptionPane.showInputDialog("Digite o Valor de EpsilonCD (%): ")); //inserir em %
+		this.deltaEpsilonPD = Double.parseDouble(JOptionPane.showInputDialog("Digite o Valor de DeltaEpsilonPD (%): ")); //inserir em %
 		
 		
 		// RECEBER OS SEGUINTES DADOS: BETAX / BETAZ / EPSILON CD / DELTAEPSILONPD
 		//Condições para verificar o domínio
-		if(deltaEpsilonPD == 0.1 && (epsilonCD >= 0.035 && epsilonCD > 0))
+		if(deltaEpsilonPD == 10 && (epsilonCD >= 3.5 && epsilonCD > 0))
 		{
 			this.dominio = 2;
 		}
-		else if(epsilonCD == 0.035 && (deltaEpsilonPD <= 0.1 && deltaEpsilonPD > 0))
+		else if(epsilonCD == 3.5 && (deltaEpsilonPD <= 10 && deltaEpsilonPD > 0))
 		{
 			this.dominio = 3;
 		}
 		
-		this.epsilonPD = acoArmaduraAtiva.getPreAlongamento() + deltaEpsilonPD;
+		this.epsilonPD = acoArmaduraAtiva.getPreAlongamento() + deltaEpsilonPD; //resultado em %
 		this.tensaoAcoAtivo = Double.parseDouble(JOptionPane.showInputDialog("Valor de epsilonPD: " + epsilonPD + "\nDigite o Valor de tensaoAcoAtivo: "));
 		
 		
@@ -82,25 +83,22 @@ public class Viga {
 		
 		//Ap pg64 H
 		//quantidade minima a ser utilizado
-		this.areaAcoAtivoMinima = (mSD * Math.pow(10, 4))/ betaZ * dP * tensaoAcoAtivo;
+		this.areaAcoAtivoMinima = (mSD * Math.pow(10, 4))/ (betaZ * dP * tensaoAcoAtivo);
 		//pg 64 letra I
 		Double ntd = mSD/ (betaZ * dP);
-		Double ntd1 = areaAcoAtivoMinima * tensaoAcoAtivo;
+		Double ntd1 = (areaAcoAtivoMinima * tensaoAcoAtivo)/10000;//divindo para transformar
 		//Se esses cálculos não estiverem iguais, algo no cálculo está errado.
 		DecimalFormat decimal = new DecimalFormat( "0.0000" );
-		DecimalFormat decimal2 = new DecimalFormat( "0.0000" );
-		System.out.println(decimal.format(ntd));
-		System.out.println(decimal2.format(ntd1));
-		if(ntd == ntd1){
+		if(decimal.format(ntd) == decimal.format(ntd1)){
 			this.forcaTracao = ntd;
 		} else {
-			JOptionPane.showMessageDialog(null, "Calculo Errado, não é possível concluir a requisição!", "Erro", JOptionPane.ERROR_MESSAGE);
+		//	JOptionPane.showMessageDialog(null, "Calculo Errado, não é possível concluir a requisição!", "Erro", JOptionPane.ERROR_MESSAGE);
 //			throw new Exception("");
 		}
 		//numero minimo de cordoalhas a ser utilizado
-		this.quantidadeAco = areaAcoAtivoMinima/acoArmaduraAtiva.getArea();
+		this.quantidadeAco = areaAcoAtivoMinima/(acoArmaduraAtiva.getArea()*Math.pow(10, 4));
 	       //area de aco ativo final
-			this.areaAcoAtivoFinal = acoArmaduraAtiva.getQuantidadeCordoalhas() * acoArmaduraAtiva.getArea();
+			this.areaAcoAtivoFinal = acoArmaduraAtiva.getQuantidadeCordoalhas() * (acoArmaduraAtiva.getArea()*Math.pow(10, 4));
 		//FORMULA 36
 			this.forcaTracao = areaAcoAtivoMinima * tensaoAcoAtivo;
 		
@@ -181,18 +179,18 @@ public class Viga {
 		//this.tensaoAcoSd = acoArmaduraPassiva.getfyk() / gamaS;
 		//Calculo das forças de tracao
 		//FORÇA de Tração na armadura ativa
-		this.forcaTracaoAtivo = areaAcoAtivoFinal * tensaoAcoPd;
+		this.forcaTracaoAtivo = (areaAcoAtivoFinal * tensaoAcoPd)/10000; //dividindo para transformar
 		//Força de tração na armadura passiva
 		//this.forcaTracaoPassivo = acoArmaduraPassiva.getArea() * tensaoAcoSd;
 		//Força de tração total NTD
 		//this.forcaTracaoTotal = forcaTracaoAtivo + forcaTracaoPassivo;
 		this.forcaTracaoTotal = forcaTracaoAtivo;	
 		//PG 67 Tensao no concreto 
-		this.tensaoCD = 0.85 * (concreto.getFck()/1.4);
+		this.tensaoCD = 0.85 * (concreto.getFck()/1.4);//MPA
 		
 		
 		//PG68 Aréa comprimida (Acc)
-		this.areaComprimida = forcaTracaoTotal/tensaoCD;
+		this.areaComprimida = forcaTracaoTotal/tensaoCD; //m²
 		
 		//pg68 altura diagrama compressao
 		this.yAlturaDiagramaCompressao = areaComprimida/base;
@@ -203,7 +201,7 @@ public class Viga {
 		//pg68 LAMBA CONCRETO = 0.8
 		
 		//EPSLONCU 
-		this.epsilonCU = 0.035;
+		this.epsilonCU = 3.5; // unidade em %
 		
 		//PG69 INICIO DEFORMAÇÕES ARMADURAS ATIVAS
 		this.deltaEpsilonPD2 = ((dP - posicaoLinhaNeutra )/posicaoLinhaNeutra)*epsilonCU;
@@ -243,14 +241,14 @@ public class Viga {
 		//FIM DA VERIFICAÇÃO DO ESTADO LIMITE ÚLTIMO
 		
 		if(concreto.getFck() > 20 && concreto.getFck() < 50){
-			this.fctm = 0.3 * Math.pow(concreto.getFck() , 2/3); 
+			this.fctm = 0.3 * Math.pow(concreto.getFck(), 0.66666); 
 		} else {
 			this.fctm = 2.12 * Math.log(1+(0.11 * concreto.getFck()));
 		}
 		
-		this.fctkf = 1.428 * 0.7 * fctm;
+		this.fctkf = (1.428 * 0.7 * fctm)*1000;//Verificar unidade (x1000)
 		
-		this.npinfinito = areaAcoAtivoFinal * acoArmaduraAtiva.getPreAlongamento() * acoArmaduraAtiva.getElasticidadeacoativo();
+		this.npinfinito = (-(areaAcoAtivoFinal * acoArmaduraAtiva.getPreAlongamento() * (acoArmaduraAtiva.getElasticidadeacoativo()/10000000)));//Verificar unidade (x100)
 		
 		
 		this.ep = (altura/2) - y0;
@@ -273,30 +271,30 @@ public class Viga {
 		
 		if( ! (tensaoFibraInferiorCF <= fctkf)){
 			System.out.println("A fibra foi fissurada");
-			JOptionPane.showMessageDialog(null, "A fibra foi fissurada", "Erro", JOptionPane.ERROR_MESSAGE);
+		//	JOptionPane.showMessageDialog(null, "A fibra foi fissurada", "Erro", JOptionPane.ERROR_MESSAGE);
 //			throw new Exception("");
 		}
 		
 		else if( !(tensaoFibraSuperiorCF <= Math.abs(0.6 * concreto.getFck()) )){
-			JOptionPane.showMessageDialog(null, "A fibra foi fissurada", "Erro", JOptionPane.ERROR_MESSAGE);
+			//JOptionPane.showMessageDialog(null, "A fibra foi fissurada", "Erro", JOptionPane.ERROR_MESSAGE);
 //			throw new Exception("");
 		}
 		
 	
 		
 		else if(! (tensaoFibraInferiorCQP <= 0)){
-			JOptionPane.showMessageDialog(null, "A fibra foi fissurada", "Erro", JOptionPane.ERROR_MESSAGE);
+			//JOptionPane.showMessageDialog(null, "A fibra foi fissurada", "Erro", JOptionPane.ERROR_MESSAGE);
 //			throw new Exception("");
 		}
 		
 		
 		else if( !(tensaoFibraSuperiorCQP <= Math.abs(0.6 * concreto.getFck()))){
-			JOptionPane.showMessageDialog(null, "A fibra foi fissurada", "Erro", JOptionPane.ERROR_MESSAGE);
+			//JOptionPane.showMessageDialog(null, "A fibra foi fissurada", "Erro", JOptionPane.ERROR_MESSAGE);
 //			throw new Exception("");
 		}
 		else{
 		//Se passar todos os testes de fissura (quatro condições acima)
-			JOptionPane.showMessageDialog(null, "Como não houve fissuração, o estádio 1 foi confirmado", "Sucesso", JOptionPane.DEFAULT_OPTION);
+			//JOptionPane.showMessageDialog(null, "Como não houve fissuração, o estádio 1 foi confirmado", "Sucesso", JOptionPane.DEFAULT_OPTION);
 //			throw new Exception("");
 		}
 		
@@ -304,26 +302,35 @@ public class Viga {
 		
 	
 		//INICIO  DIA 23/10
-		this.tensaoFibraSupProt = ((acoArmaduraAtiva.getPondPretracao() * acoArmaduraAtiva.getNp0()) / area) + ((acoArmaduraAtiva.getPondPretracao()*acoArmaduraAtiva.getNp0()*ep)/wCSup);
-		this.tensaoFibraInfProt = ((acoArmaduraAtiva.getPondPretracao() * acoArmaduraAtiva.getNp0()) / area) + ((acoArmaduraAtiva.getPondPretracao()*acoArmaduraAtiva.getNp0()*ep)/wCInf);
-		this.tensaoFibraSupPP = mG1 / wCSup;
+		this.tensaoFibraSupProt = ((acoArmaduraAtiva.getPondPretracao() *(- acoArmaduraAtiva.getNp0())) / area) - ((acoArmaduraAtiva.getPondPretracao()*(-acoArmaduraAtiva.getNp0())*ep)/wCSup);
+		this.tensaoFibraInfProt = ((acoArmaduraAtiva.getPondPretracao() *(- acoArmaduraAtiva.getNp0())) / area) + ((acoArmaduraAtiva.getPondPretracao()*(-acoArmaduraAtiva.getNp0())*ep)/wCInf);
+		this.tensaoFibraSupPP = -(mG1 / wCSup);
 		this.tensaoFibraInfPP = mG1 / wCInf;
 		//resistencia do concreto ao J dias
 		this.t = 14; //UTILIZANDO 14 DIAS
 		//UTILIZANDO S=0.38
 		this.beta1 = 0.85436; 
-		this.fckJ = beta1 * (concreto.getFck());
+		this.fckJ = beta1 * concreto.getFck(); 
 		//verificacões ELU simplificada (formulas 116 e 117) realizer o IF
 		
 		
 		
 		//4 passo
 		//Confirmar ordem das variáveis
-		//while((n * (tensaoFibraSupProt)+(tensaoFibraSupPP)) >= 1.2 * 0.3 * Math.pow(fckJ, 2/3))
-		this.nSup = 1.2 * 0.3 * Math.pow(fckJ, 2/3)/tensaoFibraSupProt-tensaoFibraSupPP;
-		this.nInf = Math.abs(0.7*fckJ)/tensaoFibraInfProt-tensaoFibraInfPP;
+		//while((n * (tensaoFibraSupProt)+(tensaoFibraSupPP)) >= 1.2 * 0.3 * Math.pow(fckJ, 0.66666))
+		this.nSup = (1.2 * ((0.3 * Math.pow(fckJ, 0.66666))*1000)-tensaoFibraSupPP)/tensaoFibraSupProt;
+		this.nInf = (-((0.7*(fckJ*1000))+tensaoFibraInfPP))/tensaoFibraInfProt;
+		
+		if (nSup > acoArmaduraAtiva.getQuantidadeCordoalhas() || nInf > acoArmaduraAtiva.getQuantidadeCordoalhas()){
+			//JOptionPane.showMessageDialog(null, "Quantidade máxima de cordoalhas excedida", "Erro", JOptionPane.ERROR_MESSAGE);
+//			throw new Exception("");
+			
+		}
 		
 		//5 Passo
+		this.tensaoResultanteSup = acoArmaduraAtiva.getQuantidadeCordoalhas() * tensaoFibraSupProt + tensaoFibraSupPP;
+		this.tensaoResultanteInf = acoArmaduraAtiva.getQuantidadeCordoalhas() * tensaoFibraInfProt + tensaoFibraInfPP;
+		
 			
 		//6 passo
 //		this.h1 = null;
@@ -333,7 +340,7 @@ public class Viga {
 		
 		//INICIO DOS CALCULOS DE PERDAS
 		//PERDA INICIAL - RELAXACAO
-		this.tensaoProtensao = acoArmaduraAtiva.getNp0() / acoArmaduraAtiva.getArea();
+		this.tensaoProtensao = (acoArmaduraAtiva.getNp0() / acoArmaduraAtiva.getArea())/1000; //verificar unidade (/1000)
 		this.relaxacaoMilHoras = tensaoProtensao / acoArmaduraAtiva.getFptk();
 		
 		this.relaxacaoMilHoras2 = Double.parseDouble(JOptionPane.showInputDialog("Valor de relaxacaoMilHoras: "+ relaxacaoMilHoras + "\nDigite o Valor de relaxacaoMilHoras2: "));
@@ -343,13 +350,14 @@ public class Viga {
 //		if(!(t < 41.66)){
 			this.relaxacaoInterpolacao = relaxacaoMilHoras2 * Math.pow(((t-0)/41.67), 0.15);
 //		}
-		this.relaxacaoPerdas = relaxacaoInterpolacao * tensaoProtensao;
-		this.perdaProtensaoRelaxacao = relaxacaoPerdas * acoArmaduraAtiva.getArea();
+		this.relaxacaoPerdas = relaxacaoInterpolacao * tensaoProtensao; //está em kpa
+		this.perdaProtensaoRelaxacao = (relaxacaoPerdas * acoArmaduraAtiva.getArea())*10;// por cordoalha
 		//fim da relaxacao
 		//Inicio retracao
 		this.umidade = umidade;// ENTRAR COM ESSE DADO DE ACORDO COM TABELA
 		this.gamaFicticio = 1+Math.pow(2.718281828, (-7.8+(0.1*umidade)));
-		this.perimetroExternoAtmosfera = altura+altura+base+l; //descobrir onde achar este dado
+		//this.perimetroExternoAtmosfera = altura+altura+base+l; 
+		this.perimetroExternoAtmosfera = 1.5;// retirar
 		this.hFicticio = gamaFicticio * ((2*area)/perimetroExternoAtmosfera);
 		this.temperaturaMedia = 30;
 		this.gamaEndurecimento = gamaEndurecimento;// ENTRAR COM ESSE DADO DE ACORDO COM TABELA
@@ -360,10 +368,12 @@ public class Viga {
 		
 		this.beta1Infinito = Double.parseDouble(JOptionPane.showInputDialog("Valor de hFicticio: "+ hFicticio + "\nDigite o Valor de beta1Infinito: "));// ENTRAR COM ESSE DADO DE ACORDO COM TABELA
 		this.beta1 = 1.0;
-		this.epsilonCS = epsilon1S * epsilon2S * (1-beta1);
-		this.tensaoRetracaoInicial = epsilonCS * acoArmaduraAtiva.getElasticidadeacoativo();
-		this.forcaRetracaoInicial = tensaoRetracaoInicial * acoArmaduraAtiva.getArea();
-		this.forcaFinal1 = acoArmaduraAtiva.getNp0() - forcaRetracaoInicial - perdaProtensaoRelaxacao;
+		this.epsilonCS = epsilon1S * epsilon2S * (1-beta1Infinito);
+		//this.epsilonCS = -(0.00054); //retirar
+		this.tensaoRetracaoInicial = epsilonCS * acoArmaduraAtiva.getElasticidadeacoativo(); //KPA
+		this.forcaRetracaoInicial = tensaoRetracaoInicial * acoArmaduraAtiva.getArea(); //KN por cordoalha
+		this.forcaFinal1 = acoArmaduraAtiva.getNp0() + forcaRetracaoInicial - perdaProtensaoRelaxacao;
+		this.porcentagemForçaFinal1 = 100-((forcaFinal1*100)/acoArmaduraAtiva.getNp0());
 		
 		//INICIO DA HOMOGENIZAÇÃO DA SEÇÃO PAG97
 		this.gamaHomo = 15;
@@ -377,13 +387,14 @@ public class Viga {
 		//ENCURTAMENTO IMEDIATO DO CONCRETO
 		this.eLinhaP = yCLinhaInf - y0;
 		this.gamaE = 1;
-		this.eCI = gamaE * 5600 * Math.pow(concreto.getFck(), (1/2));
+		this.eCI = (gamaE * 5600 * Math.pow(concreto.getFck(), (0.5)))*1000;
 		//checar parenteses
 		this.encurtamentoImediato = (acoArmaduraAtiva.getElasticidadeacoativo()/eCI)*((forcaFinal1/areaHomogenizada)+(forcaFinal1*Math.pow(eLinhaP, 2)/inerciaLinhaC)+((mG1*Math.pow(l, 2))/8*(eLinhaP/inerciaLinhaC)));
 		//perda da força pelo encurtamento imediato
 		this.deltaPP = encurtamentoImediato * acoArmaduraAtiva.getArea();
 		//valor da força final de protensão considerando as perdas imediatas e que todos os valores estão em módulo:
 		this.forcaFinal2 = forcaFinal1 - deltaPP;
+		this.porcentagemForçaFinal2 = 100-((forcaFinal2*100)/acoArmaduraAtiva.getNp0());
 		
 		//INICIO PERDAS PROGRESSIVAS PG90
 		this.fcT0 = Double.parseDouble(JOptionPane.showInputDialog("Digite o Valor de fcT0: ")); //receber da tabela
@@ -391,33 +402,35 @@ public class Viga {
 
 		
 		this.fluenciaRapida = 0.8*(1-(fcT0/fcTInfinito)); //phiA
-		this.phi1C = 4.45 - (0.035 * umidade);
+		this.phi1C = 4.45 - (0.035 * (umidade*100));
 		this.phi2C = (42+hFicticio)/(20+hFicticio);
-		this.phiInfinito = phi1C * phi2C;
-				
-		this.betaF0 = Double.parseDouble(JOptionPane.showInputDialog("Valor de idadeFicticiaConcreto/phiInfinito: " + idadeFicticiaConcreto + "/" + phiInfinito + "\nValor de Beta F0: ")); //receber da tabela
+		this.phiInfinito = phi1C * phi2C; 
+		//pular linha no POPUP		
+		this.betaF0 = Double.parseDouble(JOptionPane.showInputDialog("Valor de idadeFicticiaConcreto: " + idadeFicticiaConcreto + "\n PhInfinito: " + phiInfinito + "\nValor de Beta F0: ")); //receber da tabela
 		this.betaFInfinito = 1.0;
 		this.betaD = 1;
-		this.coeficienteFluencia = fluenciaRapida +(phiInfinito*(1-betaF0))+0.4;
-		this.mG1Y = (mG1*ep)/inerciaX;
-		this.mGiG1Y = (mGiG1*ep)/inerciaX;
-		this.tensaoNormalProtensao = (forcaFinal2 / area) + (((forcaFinal2*ep)/inerciaX)*ep);
-		this.tensaoProntensaoAco = forcaFinal2/acoArmaduraAtiva.getArea();
+		this.coeficienteFluencia = (fluenciaRapida +(phiInfinito*(1-betaF0))+0.4)/10;//verificar unidade (/10)
+		this.mG1Y = (mG1*ep)/inerciaX; //KPA
+		this.mGiG1Y = (mGiG1*ep)/inerciaX; //KPA
+		this.tensaoNormalProtensao = (forcaFinal2 / area) + (((forcaFinal2*ep)/inerciaX)*ep); //KPA
+		this.tensaoProntensaoAco = forcaFinal2/acoArmaduraAtiva.getArea(); //KPA
 		this.alphaP = acoArmaduraAtiva.getElasticidadeacoativo() / eCI;
 		this.perdaRetracaoFluencia = (((epsilonCS*acoArmaduraAtiva.getElasticidadeacoativo())+(alphaP*coeficienteFluencia*mG1Y))+(mGiG1Y*coeficienteFluencia))/(1-(alphaP*(tensaoNormalProtensao/tensaoProntensaoAco)*(1+(coeficienteFluencia/2))));
 		this.valorPerdaRetracaoFluencia = perdaRetracaoFluencia * acoArmaduraAtiva.getArea();
-		this.tensaoP0 = forcaFinal2/acoArmaduraAtiva.getArea();
-		this.deltaTensaoP0 = mGiG1*(ep/inerciaX)*alphaP;
-		this.tensaoPI = tensaoP0 + deltaTensaoP0;
-		this.coeficienteFinalRelaxacaoPura = tensaoPI / acoArmaduraAtiva.getFptk();
-		this.relaxacaoPura = coeficienteFinalRelaxacaoPura*tensaoPI;
+		this.tensaoP0 = forcaFinal2/acoArmaduraAtiva.getArea(); //KPA
+		this.deltaTensaoP0 = mGiG1*(ep/inerciaX)*alphaP; //KPA
+		this.tensaoPI = tensaoP0 + deltaTensaoP0; //KPA
+		this.coeficienteFinalRelaxacaoPura = (tensaoPI / acoArmaduraAtiva.getFptk())/1000; //verificar unidade (/1000)
+		//FAZER POPUP
+		this.coeficienteFinalRelaxacaoPura2 = Double.parseDouble(JOptionPane.showInputDialog("Valor de Coeficiente final de Relaxação Pura: " + coeficienteFinalRelaxacaoPura + "\nValor do Coeficiente final 2: ")); 
+		this.relaxacaoPura = coeficienteFinalRelaxacaoPura2*tensaoPI;
 		this.relaxacaoRelativa = relaxacaoPura*((1-(2*perdaRetracaoFluencia))/tensaoPI);
 		this.perdaProtensaoRelaxacaoAco = -(relaxacaoRelativa)*acoArmaduraAtiva.getArea();
 		this.forcaFinal3 = forcaFinal2 - perdaRetracaoFluencia - perdaProtensaoRelaxacaoAco;
 		//INICIO DAS VERIFICACOES PARA PERDAS
 		// ELS
 		if(concreto.getFck() > 20 && concreto.getFck() < 50){
-			this.fctm = 0.3 * Math.pow(concreto.getFck() , 2/3); 
+			this.fctm = 0.3 * Math.pow(concreto.getFck() , 0.66666); 
 		} else {
 			this.fctm = 2.12 * Math.log(1+(0.11 * concreto.getFck()));
 		}
@@ -442,12 +455,12 @@ public class Viga {
 		this.tensaoFibraInferiorCQP = forcaFinal3/area + (forcaFinal3 * ep)/wCInf + mCQP/wCInf;
 		
 		//ELU
-		this.preAlongamentoPerdas = ((forcaFinal3 * (1-0.25))/(200 * Math.pow(10, 9)) * area ) * 1000;
+		this.preAlongamentoPerdas = ((forcaFinal3 * (1-0.25))/(acoArmaduraAtiva.getElasticidadeacoativo()) * area ) * 1000;
 
 		//tensão aço armadura ativa
 				this.tensaoPDPerdas = acoArmaduraAtiva.getFpyk()*(1-forcaFinal3) / gamaS;
 				//tensão aço armadura passiva
-				this.tensaoAcoSd = acoArmaduraPassiva.getfyk() / gamaS;
+				//this.tensaoAcoSd = acoArmaduraPassiva.getfyk() / gamaS;
 				//Calculo das forças de tracao
 				//FORÇA de Tração na armadura ativa
 				this.forcaTracaoAtivo = areaAcoAtivoFinal * tensaoAcoPd;
@@ -852,6 +865,11 @@ public class Viga {
 	//Novas variaveis para verificacoes de perdas
 	private Double preAlongamentoPerdas;
 	private Double tensaoPDPerdas;
+	private Double coeficienteFinalRelaxacaoPura2;
+	
+	private Double porcentagemForçaFinal1;
+	private Double porcentagemForçaFinal2;
+	private Double porcentagemForçaFinal3;
 	
 	
 	public Double getBase() {
@@ -2056,6 +2074,30 @@ public class Viga {
 		return tensaoPDPerdas;
 	}
 
+	public Double getPorcentagemForçaFinal1() {
+		return porcentagemForçaFinal1;
+	}
+
+	public void setPorcentagemForçaFinal1(Double porcentagemForçaFinal1) {
+		this.porcentagemForçaFinal1 = porcentagemForçaFinal1;
+	}
+
+	public Double getPorcentagemForçaFinal2() {
+		return porcentagemForçaFinal2;
+	}
+
+	public void setPorcentagemForçaFinal2(Double porcentagemForçaFinal2) {
+		this.porcentagemForçaFinal2 = porcentagemForçaFinal2;
+	}
+
+	public Double getPorcentagemForçaFinal3() {
+		return porcentagemForçaFinal3;
+	}
+
+	public void setPorcentagemForçaFinal3(Double porcentagemForçaFinal3) {
+		this.porcentagemForçaFinal3 = porcentagemForçaFinal3;
+	}
+
 	public void setTensaoPDPerdas(Double tensaoPDPerdas) {
 		this.tensaoPDPerdas = tensaoPDPerdas;
 	}
@@ -2076,6 +2118,14 @@ public class Viga {
 
 	public void setnInf(Double nInf) {
 		this.nInf = nInf;
+	}
+
+	public Double getCoeficienteFinalRelaxacaoPura2() {
+		return coeficienteFinalRelaxacaoPura2;
+	}
+
+	public void setCoeficienteFinalRelaxacaoPura2(Double coeficienteFinalRelaxacaoPura2) {
+		this.coeficienteFinalRelaxacaoPura2 = coeficienteFinalRelaxacaoPura2;
 	}
 
 	
